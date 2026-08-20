@@ -372,6 +372,8 @@ flowchart TD
 | DEP-DCP-008 | File storage/upload service | Application/Infrastructure | Attachment upload | File submission unavailable |
 | DEP-DCP-003 | Data Collection Template | Pillar Configuration | Data validation | Data cannot be validated |
 | DEP-DCP-009 | Validation rules | Template Configuration | Submission validation | Invalid data may be accepted |
+| DEP-DCP-010 | API Gateway & Auth Service | Application/Infrastructure | API Integration | External payloads cannot be authenticated or ingested |
+| DEP-DCP-011 | Email/Webhook Listener Service | Application/Infrastructure | Unstructured Source Capture | Emailed/raw artifacts cannot be captured |
 
 **J. Acceptance Criteria**
 
