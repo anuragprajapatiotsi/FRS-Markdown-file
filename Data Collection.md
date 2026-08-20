@@ -364,6 +364,7 @@ The functionality shall allow the Pillar User to:
 * Identify errors or missing information.
 * Return the submission to the Data Provider for correction.
 * Approve valid submissions.
+* Commit validated data to the centralized Published Fact Store as a snapshot upon final approval.
 * Maintain review comments and audit history.
 
 **B. Business Definitions**
@@ -440,6 +441,7 @@ flowchart TD
 | BR-DCP-024 | Rejected submissions shall retain their review history. |
 | BR-DCP-025 | Every review action shall be recorded in the audit trail. |
 | BR-DCP-026 | Approved data shall be marked as approved and made available for downstream reporting/processing. |
+| BR-DCP-027 | The system shall prevent duplicate final approvals and write the published snapshot exactly once upon final approval. |
 
 **G. Application Workflows**
 
@@ -511,6 +513,7 @@ flowchart TD
 | AC-DCP-024 | FR-DCP-024 | Submission is rejected | Submission changes to Rejected and rejection reason is recorded. |
 | AC-DCP-025 | FR-DCP-025 | Review decision is completed | Review action is recorded in audit history. |
 | AC-DCP-026 | FR-DCP-026 | Decision is recorded | System displays the correct submission status. |
+| AC-DCP-029 | FR-DCP-029 | Final approval occurs | A published snapshot of the validated data is securely written to the fact store. |
 
 **4.2.2.4 Operational Report on Data Collection Status**
 

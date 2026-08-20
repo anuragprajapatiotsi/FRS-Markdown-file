@@ -1,0 +1,165 @@
+**4.2.2.3 Review & Approve**
+
+**A. Functional Purpose**
+
+The **Review & Approve** functionality enables the Pillar User to review data submitted by the Data Provider before the data becomes part of the approved dataset.
+
+The functionality shall allow the Pillar User to:
+
+* View submitted data.
+* Review uploaded attachments.
+* Process submissions through a dedicated **Validation Queue** employing a comprehensive Rule Catalogue (categorizing issues as Blockers, Errors, or Warnings).
+* Perform automated comparative analysis against historically approved data.
+* Validate data against business and template rules.
+* Identify errors or missing information.
+* Return the submission to the Data Provider for correction.
+* Approve valid submissions.
+* Maintain review comments and audit history.
+
+**B. Business Definitions**
+
+| **Term** | **Definition** |
+| --- | --- |
+| Review | Examination of submitted data by an authorized Pillar User. |
+| Approval | Formal acceptance of a submitted dataset after successful review. |
+| Rejection | Decision that the submitted data does not satisfy the required criteria. |
+| Correction Request | Request sent to the Data Provider to correct or resubmit data. |
+| Review Comment | Observation or feedback recorded by the reviewer. |
+| Approved Data | Data that has successfully passed the review and approval process. |
+
+**C. Functional Hierarchy Diagram**
+
+**Diagram type:** Functional hierarchy diagram  
+**Diagram ID:** DIA-DCP-003
+
+```mermaid
+flowchart TD
+    A[Review & Approve]
+    A --> B[Submission Review]
+    B --> B1[Open Submission]
+    B --> B2[View Data]
+    B --> B3[View Attachments]
+    
+    A --> C[Data Validation]
+    C --> C1[Check Completeness]
+    C --> C2[Verify Business Rules]
+    
+    A --> D[Review Decision]
+    D --> D1[Reviewer]
+    D --> D2[Review Date/Time]
+    D --> D3[Decision]
+    D3 --> D3a[Approve]
+    D3 --> D3b[Return for Correction]
+    D3 --> D3c[Reject]
+    D --> D4[Comments]
+```
+
+**D. Ownership, Approval Authority, Actors and Access**
+
+|  |  |  |  |
+| --- | --- | --- | --- |
+| **Functional Area** | **Owning Division** | **Operational Ownership** | **Approval Authority** |
+| Submission Review | Pillar | Pillar User | Authorized Pillar Approver |
+| Data Validation | Pillar | Pillar User | Authorized Pillar Approver |
+| Correction Request | Pillar | Pillar User | Pillar Manager |
+| Final Approval | Pillar | Authorized Approver | Pillar Manager / Designated Authority |
+
+**E. Functional Requirements**
+
+|  |  |  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| **Requirement ID** | **Module Name** | **Requirement Description** | **Priority** | **Stakeholder** | **Business Rule ID** | **Acceptance Criteria ID** | **Dependency ID** |
+| FR-DCP-019 | Review & Approve | The system shall provide Pillar Users with a list of submissions pending review. | High | Pillar User | BR-DCP-019 | AC-DCP-019 | DEP-DCP-010 |
+| FR-DCP-020 | Review & Approve | The system shall allow reviewers to view submitted data and attachments. | High | Pillar User | BR-DCP-020 | AC-DCP-020 | DEP-DCP-007 |
+| FR-DCP-021 | Review & Approve | The system shall allow reviewers to record review comments. | High | Pillar User | BR-DCP-021 | AC-DCP-021 | DEP-DCP-010 |
+| FR-DCP-022 | Review & Approve | The system shall allow reviewers to approve valid submissions. | High | Authorized Approver | BR-DCP-022 | AC-DCP-022 | DEP-DCP-010 |
+| FR-DCP-023 | Review & Approve | The system shall allow reviewers to return submissions for correction. | High | Pillar User | BR-DCP-023 | AC-DCP-023 | DEP-DCP-010 |
+| FR-DCP-024 | Review & Approve | The system shall allow reviewers to reject submissions with appropriate comments. | High | Authorized Approver | BR-DCP-024 | AC-DCP-024 | DEP-DCP-010 |
+| FR-DCP-025 | Review & Approve | The system shall maintain review and approval history. | High | System | BR-DCP-025 | AC-DCP-025 | DEP-DCP-011 |
+| FR-DCP-026 | Review & Approve | The system shall update the submission status based on the reviewer decision. | High | System | BR-DCP-026 | AC-DCP-026 | DEP-DCP-010 |
+
+**F. Business Rules**
+
+| **Business Rule ID** | **Business Rule** |
+| --- | --- |
+| BR-DCP-019 | Only submissions assigned to the Pillar User's authorized Pillar shall be displayed. |
+| BR-DCP-020 | The reviewer shall have access to all information necessary to validate the submission. |
+| BR-DCP-021 | Comments shall be mandatory when returning or rejecting a submission. |
+| BR-DCP-022 | Only authorized approvers can provide final approval. |
+| BR-DCP-023 | Returned submissions shall be available to the Data Provider for correction and resubmission. |
+| BR-DCP-024 | Rejected submissions shall retain their review history. |
+| BR-DCP-025 | Every review action shall be recorded in the audit trail. |
+| BR-DCP-026 | Approved data shall be marked as approved and made available for downstream reporting/processing. |
+
+**G. Application Workflows**
+
+**Diagram type:** Functional activity diagram  
+**Workflow ID:** WF-DCP-003
+
+```mermaid
+flowchart TD
+    A[Data Provider] --> B[Submit Data]
+    B --> C[Under Review]
+    C --> D[Pillar User]
+    D --> E[Review Submission]
+    E --> F[Validate Data]
+    F --> G[Approve]
+    F --> H[Correction]
+    F --> I[Reject]
+    G --> J[Approved]
+    H --> K[Returned]
+    I --> L[Rejected]
+    K --> M[Data Provider]
+    M --> N[Resubmit]
+    N --> C
+```
+
+|  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- |
+| **Step** | **Actor/System** | **Action** | **System Response** | **Status/Output** | **Linked Requirement IDs** |
+| 1 | System | Identifies submitted data | Displays pending review queue | Under Review | FR-DCP-019 |
+| 2 | Pillar User | Opens submission | Displays submitted data and attachments | Submission viewed | FR-DCP-020 |
+| 3 | Pillar User | Reviews data | System provides validation information | Review in progress | FR-DCP-020 |
+| 4 | Pillar User | Adds comments | System records comments | Review comments saved | FR-DCP-021 |
+| 5 | Authorized Approver | Approves submission | System updates submission | Approved | FR-DCP-022 |
+| 6 | Pillar User | Requests correction | System sends correction request | Returned | FR-DCP-023 |
+| 7 | Authorized Approver | Rejects submission | System records rejection | Rejected | FR-DCP-024 |
+| 8 | System | Records decision | System updates audit history | Audit trail updated | FR-DCP-025 |
+| 9 | System | Updates status | System reflects final decision | Final status updated | FR-DCP-026 |
+
+**H. Module-wise UI/Wireframes**
+
+|  |  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- | --- |
+| **UI ID** | **Screen/Page** | **Wireframe/Mockup Ref** | **Authorized Actor** | **Fields/Controls** | **Actions/States/Validations** | **Linked Requirement IDs** |
+| UI-DCP-010 | Review Queue | WF-DCP-UI-010 | Pillar User | Request ID, Provider, Period, Submitted Date, Status | Search, filter, sort | FR-DCP-019 |
+| UI-DCP-011 | Submission Review | WF-DCP-UI-011 | Pillar User | Submitted data, attachments, template | View/validate | FR-DCP-020 |
+| UI-DCP-012 | Review Comments | WF-DCP-UI-012 | Pillar User | Comments/observations | Mandatory for correction/rejection | FR-DCP-021 |
+| UI-DCP-013 | Approval Decision | WF-DCP-UI-013 | Authorized Approver | Approve, Return, Reject | Decision validation | FR-DCP-022 to FR-DCP-024 |
+| UI-DCP-014 | Review History | WF-DCP-UI-014 | Pillar User | Reviewer, timestamp, action, comments | View audit history | FR-DCP-025 |
+
+**I. Dependencies**
+
+|  |  |  |  |  |
+| --- | --- | --- | --- | --- |
+| **Dependency ID** | **Dependency/Required Input** | **Owner/Source** | **Required By** | **Impact if Unavailable** |
+| DEP-DCP-010 | Submitted data queue | Data Ingestion | Review | Reviewer cannot process submissions |
+| DEP-DCP-011 | Audit trail service | Application | Review/Approval | Review history cannot be maintained |
+| DEP-DCP-007 | Submitted Data | Data Provider | Review | No data available for review |
+| DEP-DCP-003 | Data Collection Template | Pillar Configuration | Validation | Submission cannot be validated against template |
+
+**J. Acceptance Criteria**
+
+|  |  |  |  |
+| --- | --- | --- | --- |
+| **Acceptance Criteria ID** | **Linked Requirements** | **Scenario** | **Acceptance Criteria** |
+| AC-DCP-019 | FR-DCP-019 | Submission is received | Submission appears in the review queue. |
+| AC-DCP-020 | FR-DCP-020 | Reviewer opens submission | Complete submitted data and attachments are accessible. |
+| AC-DCP-021 | FR-DCP-021 | Reviewer adds comment | Comment is successfully recorded. |
+| AC-DCP-022 | FR-DCP-022 | Valid submission is approved | Submission status changes to Approved. |
+| AC-DCP-023 | FR-DCP-023 | Data requires correction | Submission changes to Returned and Data Provider is notified. |
+| AC-DCP-024 | FR-DCP-024 | Submission is rejected | Submission changes to Rejected and rejection reason is recorded. |
+| AC-DCP-025 | FR-DCP-025 | Review decision is completed | Review action is recorded in audit history. |
+| AC-DCP-026 | FR-DCP-026 | Decision is recorded | System displays the correct submission status. |
+
+**4.2.2.4
