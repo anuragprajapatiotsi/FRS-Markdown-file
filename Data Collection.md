@@ -240,6 +240,18 @@ flowchart TD
     D --> D2[Enter Data]
     D --> D3[Validate Data]
     D --> D4[Submit]
+    
+    A --> E[API Integration]
+    E --> E1[Receive API Payload]
+    E --> E2[Authenticate Source]
+    E --> E3[Payload Validation]
+    E --> E4[Stage Records]
+    
+    A --> F[Unstructured Source Capture]
+    F --> F1[Receive Email / URL / PDF]
+    F --> F2[Store as Source Artifact]
+    F --> F3[Route for Manual Transcription]
+    F3 --> C
 ```
 
 **D. Ownership, Approval Authority, Actors and Access**
@@ -293,9 +305,18 @@ flowchart TD
     C --> D[Upload Attachment]
     C --> E[Manual Entry]
     C --> F[Online Form]
+    
+    A2[External API System] --> D2[API Integration]
+    A3[Email / Unstructured Source] --> D3[Unstructured Source Capture]
+    
     D --> G[Validate Submission]
     E --> G
     F --> G
+    D2 --> G
+    
+    D3 --> D3_a[Store as Source Artifact]
+    D3_a --> D3_b[Route for Transcription]
+    D3_b --> E
     G --> H{Valid?}
     H -->|Invalid| I[Show Errors]
     H -->|Valid| J[Submit]
