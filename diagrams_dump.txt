@@ -1,0 +1,599 @@
+==== WF-DCP-001 ====
+**Workflow ID:** WF-DCP-001
+
+Pillar User
+
+|
+
+v
+
+Select Pillar
+
+|
+
+v
+
+Select Data Collection Template
+
+|
+
+v
+
+Select Data Provider / Source
+
+|
+
+v
+
+Define Collection Period & Due Date
+
+|
+
+v
+
+Select Submission Method
+
+|
+
++----------------------+
+
+| |
+
+v v
+
+Online Form Attachment
+
+| |
+
++----------+-----------+
+
+|
+
+v
+
+Review Request
+
+|
+
+v
+
+Send Data Request
+
+|
+
+v
+
+Email Service
+
+|
+
+v
+
+Data Provider
+
+|
+
+v
+
+Request Sent
+
+|  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- |
+==== DIA-DCP-002 ====
+**Diagram ID:** DIA-DCP-002
+
+Data Ingestion
+
+│
+
+├── Attachment Upload
+
+│ ├── Select File
+
+│ ├── Upload File
+
+│ ├── File Validation
+
+│ └── Data Validation
+
+│
+
+├── Manual Entry
+
+│ ├── Open Data Form
+
+│ ├── Enter Data
+
+│ ├── Field Validation
+
+│ └── Submit
+
+│
+
+└── Online Form Submission
+
+├── Open Form
+
+├── Enter Data
+
+├── Validate Data
+
+└── Submit
+
+==== WF-DCP-002 ====
+**Workflow ID:** WF-DCP-002
+
+Data Provider
+
+|
+
+v
+
+Open Data Collection Request
+
+|
+
+v
+
+View Data Collection Template
+
+|
+
++-------------------+-------------------+
+
+| | |
+
+v v v
+
+Upload Attachment Manual Entry Online Form
+
+| | |
+
++-------------------+-------------------+
+
+|
+
+v
+
+Validate Submission
+
+|
+
++----+----+
+
+| |
+
+Valid Invalid
+
+| |
+
+v v
+
+Submit Show Errors
+
+|
+
+v
+
+Create Data Submission
+
+|
+
+v
+
+Update Request Status
+
+|
+
+v
+
+Under Review
+
+|  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- |
+==== DIA-DCP-003 ====
+**Diagram ID:** DIA-DCP-003
+
+Review & Approve
+
+│
+
+├── View Submitted Data
+
+│
+
+├── Review Attachment / Form Data
+
+│
+
+├── Validate Data
+
+│
+
+├── Review Comments
+
+│
+
+├── Decision
+
+│ ├── Approve
+
+│ ├── Return for Correction
+
+│ └── Reject
+
+│
+
+└── Audit Trail
+
+├── Reviewer
+
+├── Review Date/Time
+
+├── Decision
+
+└── Comments
+
+==== WF-DCP-003 ====
+**Workflow ID:** WF-DCP-003
+
+Data Provider
+
+|
+
+v
+
+Submit Data
+
+|
+
+v
+
+Under Review
+
+|
+
+v
+
+Pillar User
+
+|
+
+v
+
+Review Submission
+
+|
+
+v
+
+Validate Data
+
+|
+
++----------+----------+
+
+| | |
+
+v v v
+
+Approve Correction Reject
+
+| | |
+
+v v v
+
+Approved Returned Rejected
+
+|
+
+v
+
+Data Provider
+
+|
+
+v
+
+Resubmit
+
+|
+
+v
+
+Under Review
+
+|  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- |
+==== DIA-DCP-004 ====
+**Diagram ID:** DIA-DCP-004
+
+Operational Data Collection Report
+
+│
+
+├── Collection Overview
+
+│ ├── Total Requests
+
+│ ├── Submitted
+
+│ ├── Pending
+
+│ ├── Under Review
+
+│ ├── Approved
+
+│ ├── Returned
+
+│ └── Rejected
+
+│
+
+├── Status Analysis
+
+│ ├── By Pillar
+
+│ ├── By Data Provider
+
+│ └── By Collection Period
+
+│
+
+├── Overdue Monitoring
+
+│ ├── Overdue Requests
+
+│ └── Upcoming Due Dates
+
+│
+
+└── Report Actions
+
+├── Filter
+
+├── Search
+
+├── View Details
+
+└── Export
+
+==== WF-DCP-004 ====
+**Workflow ID:** WF-DCP-004
+
+Pillar User
+
+|
+
+v
+
+Open Operational Report
+
+|
+
+v
+
+System Retrieves Collection Data
+
+|
+
+v
+
+Display Collection Status
+
+|
+
++-----------------------+
+
+| |
+
+v v
+
+Apply Filters View Summary
+
+| |
+
+v v
+
+Filtered Results Status Analysis
+
+| |
+
++-----------+-----------+
+
+|
+
+v
+
+Drill Down Request
+
+|
+
+v
+
+View Collection Details
+
+|
+
+v
+
+Optional Export
+
+|  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- |
+==== End-to-End ====
+PILLAR USER
+
+|
+
+v
+
+Configure / Select Template
+
+|
+
+v
+
+Initiate Data Collection
+
+|
+
+v
+
+Send Email Request
+
+|
+
+v
+
+DATA PROVIDER
+
+|
+
+v
+
+Receive Collection Request
+
+|
+
+v
+
++----------+----------+
+
+| | |
+
+v v v
+
+Attachment Manual Online
+
+Upload Entry Form
+
+| | |
+
++----------+----------+
+
+|
+
+v
+
+Data Validation
+
+|
+
++------+------+
+
+| |
+
+Invalid Valid
+
+| |
+
+v v
+
+Correct Submit Data
+
+|
+
+v
+
+UNDER REVIEW
+
+|
+
+v
+
+PILLAR USER
+
+|
+
+v
+
+Review & Validate
+
+|
+
++-------------+-------------+
+
+| | |
+
+v v v
+
+APPROVE RETURN REJECT
+
+| | |
+
+v v v
+
+APPROVED PROVIDER REJECTED
+
+CORRECTION
+
+|
+
+v
+
+RESUBMIT
+
+|
+
++----> UNDER REVIEW
+
+All stages
+
+|
+
+v
+
+Operational Status Report
+
+==== Lifecycle ====
+**Overall Data Collection Status Lifecycle**
+
+Draft
+
+|
+
+v
+
+Sent
+
+|
+
+v
+
+Pending Submission
+
+|
+
+v
+
+Submitted
+
+|
+
+v
+
+Under Review
+
+|
+
++----------+-------------+
+
+| | |
+
+v v v
+
+Approved Returned Rejected
+
+|
+
+v
+
+Resubmitted
+
+|
+
+v
+
+Under Review
+

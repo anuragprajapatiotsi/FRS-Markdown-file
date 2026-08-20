@@ -89,81 +89,22 @@ The system shall maintain the complete lifecycle of the data collection request,
 **Diagram type:** Functional activity diagram  
 **Workflow ID:** WF-DCP-001
 
-Pillar User
-
-|
-
-v
-
-Select Pillar
-
-|
-
-v
-
-Select Data Collection Template
-
-|
-
-v
-
-Select Data Provider / Source
-
-|
-
-v
-
-Define Collection Period & Due Date
-
-|
-
-v
-
-Select Submission Method
-
-|
-
-+----------------------+
-
-| |
-
-v v
-
-Online Form Attachment
-
-| |
-
-+----------+-----------+
-
-|
-
-v
-
-Review Request
-
-|
-
-v
-
-Send Data Request
-
-|
-
-v
-
-Email Service
-
-|
-
-v
-
-Data Provider
-
-|
-
-v
-
-Request Sent
+```mermaid
+flowchart TD
+    A[Pillar User] --> B[Select Pillar]
+    B --> C[Select Data Collection Template]
+    C --> D[Select Data Provider / Source]
+    D --> E[Define Collection Period & Due Date]
+    E --> F[Select Submission Method]
+    F --> G[Online Form]
+    F --> H[Attachment]
+    G --> I[Review Request]
+    H --> I[Review Request]
+    I --> J[Send Data Request]
+    J --> K[Email Service]
+    K --> L[Data Provider]
+    L --> M[Request Sent]
+```
 
 |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- |
@@ -245,43 +186,27 @@ The system shall validate the submitted data against the configured Data Collect
 **Diagram type:** Functional hierarchy diagram  
 **Diagram ID:** DIA-DCP-002
 
-Data Ingestion
-
-│
-
-├── Attachment Upload
-
-│ ├── Select File
-
-│ ├── Upload File
-
-│ ├── File Validation
-
-│ └── Data Validation
-
-│
-
-├── Manual Entry
-
-│ ├── Open Data Form
-
-│ ├── Enter Data
-
-│ ├── Field Validation
-
-│ └── Submit
-
-│
-
-└── Online Form Submission
-
-├── Open Form
-
-├── Enter Data
-
-├── Validate Data
-
-└── Submit
+```mermaid
+flowchart TD
+    A[Data Ingestion]
+    A --> B[Attachment Upload]
+    B --> B1[Select File]
+    B --> B2[Upload File]
+    B --> B3[File Validation]
+    B --> B4[Data Validation]
+    
+    A --> C[Manual Entry]
+    C --> C1[Open Data Form]
+    C --> C2[Enter Data]
+    C --> C3[Field Validation]
+    C --> C4[Submit]
+    
+    A --> D[Online Form Submission]
+    D --> D1[Open Form]
+    D --> D2[Enter Data]
+    D --> D3[Validate Data]
+    D --> D4[Submit]
+```
 
 **D. Ownership, Approval Authority, Actors and Access**
 
@@ -327,71 +252,23 @@ Data Ingestion
 
 **Workflow ID:** WF-DCP-002
 
-Data Provider
-
-|
-
-v
-
-Open Data Collection Request
-
-|
-
-v
-
-View Data Collection Template
-
-|
-
-+-------------------+-------------------+
-
-| | |
-
-v v v
-
-Upload Attachment Manual Entry Online Form
-
-| | |
-
-+-------------------+-------------------+
-
-|
-
-v
-
-Validate Submission
-
-|
-
-+----+----+
-
-| |
-
-Valid Invalid
-
-| |
-
-v v
-
-Submit Show Errors
-
-|
-
-v
-
-Create Data Submission
-
-|
-
-v
-
-Update Request Status
-
-|
-
-v
-
-Under Review
+```mermaid
+flowchart TD
+    A[Data Provider] --> B[Open Data Collection Request]
+    B --> C[View Data Collection Template]
+    C --> D[Upload Attachment]
+    C --> E[Manual Entry]
+    C --> F[Online Form]
+    D --> G[Validate Submission]
+    E --> G
+    F --> G
+    G --> H{Valid?}
+    H -->|Invalid| I[Show Errors]
+    H -->|Valid| J[Submit]
+    J --> K[Create Data Submission]
+    K --> L[Update Request Status]
+    L --> M[Under Review]
+```
 
 |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- |
@@ -473,45 +350,27 @@ The functionality shall allow the Pillar User to:
 **Diagram type:** Functional hierarchy diagram  
 **Diagram ID:** DIA-DCP-003
 
-Review & Approve
-
-│
-
-├── View Submitted Data
-
-│
-
-├── Review Attachment / Form Data
-
-│
-
-├── Validate Data
-
-│
-
-├── Review Comments
-
-│
-
-├── Decision
-
-│ ├── Approve
-
-│ ├── Return for Correction
-
-│ └── Reject
-
-│
-
-└── Audit Trail
-
-├── Reviewer
-
-├── Review Date/Time
-
-├── Decision
-
-└── Comments
+```mermaid
+flowchart TD
+    A[Review & Approve]
+    A --> B[Submission Review]
+    B --> B1[Open Submission]
+    B --> B2[View Data]
+    B --> B3[View Attachments]
+    
+    A --> C[Data Validation]
+    C --> C1[Check Completeness]
+    C --> C2[Verify Business Rules]
+    
+    A --> D[Review Decision]
+    D --> D1[Reviewer]
+    D --> D2[Review Date/Time]
+    D --> D3[Decision]
+    D3 --> D3a[Approve]
+    D3 --> D3b[Return for Correction]
+    D3 --> D3c[Reject]
+    D --> D4[Comments]
+```
 
 **D. Ownership, Approval Authority, Actors and Access**
 
@@ -555,71 +414,23 @@ Review & Approve
 **Diagram type:** Functional activity diagram  
 **Workflow ID:** WF-DCP-003
 
-Data Provider
-
-|
-
-v
-
-Submit Data
-
-|
-
-v
-
-Under Review
-
-|
-
-v
-
-Pillar User
-
-|
-
-v
-
-Review Submission
-
-|
-
-v
-
-Validate Data
-
-|
-
-+----------+----------+
-
-| | |
-
-v v v
-
-Approve Correction Reject
-
-| | |
-
-v v v
-
-Approved Returned Rejected
-
-|
-
-v
-
-Data Provider
-
-|
-
-v
-
-Resubmit
-
-|
-
-v
-
-Under Review
+```mermaid
+flowchart TD
+    A[Data Provider] --> B[Submit Data]
+    B --> C[Under Review]
+    C --> D[Pillar User]
+    D --> E[Review Submission]
+    E --> F[Validate Data]
+    F --> G[Approve]
+    F --> H[Correction]
+    F --> I[Reject]
+    G --> J[Approved]
+    H --> K[Returned]
+    I --> L[Rejected]
+    K --> M[Data Provider]
+    M --> N[Resubmit]
+    N --> C
+```
 
 |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- |
@@ -707,55 +518,33 @@ The report shall enable users to monitor:
 **Diagram type:** Functional hierarchy diagram  
 **Diagram ID:** DIA-DCP-004
 
-Operational Data Collection Report
-
-│
-
-├── Collection Overview
-
-│ ├── Total Requests
-
-│ ├── Submitted
-
-│ ├── Pending
-
-│ ├── Under Review
-
-│ ├── Approved
-
-│ ├── Returned
-
-│ └── Rejected
-
-│
-
-├── Status Analysis
-
-│ ├── By Pillar
-
-│ ├── By Data Provider
-
-│ └── By Collection Period
-
-│
-
-├── Overdue Monitoring
-
-│ ├── Overdue Requests
-
-│ └── Upcoming Due Dates
-
-│
-
-└── Report Actions
-
-├── Filter
-
-├── Search
-
-├── View Details
-
-└── Export
+```mermaid
+flowchart TD
+    A[Operational Data Collection Report]
+    A --> B[Collection Overview]
+    B --> B1[Total Requests]
+    B --> B2[Submitted]
+    B --> B3[Pending]
+    B --> B4[Under Review]
+    B --> B5[Approved]
+    B --> B6[Returned]
+    B --> B7[Rejected]
+    
+    A --> C[Collection Progress]
+    C --> C1[By Pillar]
+    C --> C2[By Data Provider]
+    C --> C3[By Collection Period]
+    
+    A --> D[Overdue Monitoring]
+    D --> D1[Overdue Requests]
+    D --> D2[Upcoming Due Dates]
+    
+    A --> E[Report Actions]
+    E --> E1[Filter]
+    E --> E2[Search]
+    E --> E3[View Details]
+    E --> E4[Export]
+```
 
 **D. Ownership, Approval Authority, Actors and Access**
 
@@ -796,63 +585,20 @@ Operational Data Collection Report
 **Diagram type:** Functional activity diagram  
 **Workflow ID:** WF-DCP-004
 
-Pillar User
-
-|
-
-v
-
-Open Operational Report
-
-|
-
-v
-
-System Retrieves Collection Data
-
-|
-
-v
-
-Display Collection Status
-
-|
-
-+-----------------------+
-
-| |
-
-v v
-
-Apply Filters View Summary
-
-| |
-
-v v
-
-Filtered Results Status Analysis
-
-| |
-
-+-----------+-----------+
-
-|
-
-v
-
-Drill Down Request
-
-|
-
-v
-
-View Collection Details
-
-|
-
-v
-
-Optional Export
+```mermaid
+flowchart TD
+    A[Pillar User] --> B[Open Operational Report]
+    B --> C[System Retrieves Collection Data]
+    C --> D[Display Collection Status]
+    D --> E[Apply Filters]
+    D --> F[View Summary]
+    E --> G[Filtered Results]
+    F --> H[Status Analysis]
+    G --> I[Drill Down Request]
+    H --> I
+    I --> J[View Collection Details]
+    J --> K[Optional Export]
+```
 
 |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- |
@@ -902,179 +648,57 @@ Optional Export
 
 The overall Data Collection Process shall follow the lifecycle below:
 
-PILLAR USER
-
-|
-
-v
-
-Configure / Select Template
-
-|
-
-v
-
-Initiate Data Collection
-
-|
-
-v
-
-Send Email Request
-
-|
-
-v
-
-DATA PROVIDER
-
-|
-
-v
-
-Receive Collection Request
-
-|
-
-v
-
-+----------+----------+
-
-| | |
-
-v v v
-
-Attachment Manual Online
-
-Upload Entry Form
-
-| | |
-
-+----------+----------+
-
-|
-
-v
-
-Data Validation
-
-|
-
-+------+------+
-
-| |
-
-Invalid Valid
-
-| |
-
-v v
-
-Correct Submit Data
-
-|
-
-v
-
-UNDER REVIEW
-
-|
-
-v
-
-PILLAR USER
-
-|
-
-v
-
-Review & Validate
-
-|
-
-+-------------+-------------+
-
-| | |
-
-v v v
-
-APPROVE RETURN REJECT
-
-| | |
-
-v v v
-
-APPROVED PROVIDER REJECTED
-
-CORRECTION
-
-|
-
-v
-
-RESUBMIT
-
-|
-
-+----> UNDER REVIEW
-
-All stages
-
-|
-
-v
-
-Operational Status Report
+```mermaid
+flowchart TD
+    A[PILLAR USER] --> B[Configure / Select Template]
+    B --> C[Initiate Data Collection]
+    C --> D[Send Email Request]
+    D --> E[DATA PROVIDER]
+    E --> F[Receive Collection Request]
+    
+    F --> G1[Attachment Upload]
+    F --> G2[Manual Entry]
+    F --> G3[Online Form]
+    
+    G1 --> H[Data Validation]
+    G2 --> H
+    G3 --> H
+    
+    H -->|Invalid| I1[Correct]
+    H -->|Valid| I2[Submit Data]
+    
+    I2 --> J[UNDER REVIEW]
+    J --> K[PILLAR USER]
+    K --> L[Review & Validate]
+    
+    L --> M1[APPROVE]
+    L --> M2[RETURN]
+    L --> M3[REJECT]
+    
+    M1 --> N1[APPROVED]
+    M2 --> N2[PROVIDER CORRECTION]
+    M3 --> N3[REJECTED]
+    
+    N2 --> O[RESUBMIT]
+    O --> J
+    
+    P[All stages] -.-> Q[Operational Status Report]
+```
 
 **Overall Data Collection Status Lifecycle**
 
-Draft
-
-|
-
-v
-
-Sent
-
-|
-
-v
-
-Pending Submission
-
-|
-
-v
-
-Submitted
-
-|
-
-v
-
-Under Review
-
-|
-
-+----------+-------------+
-
-| | |
-
-v v v
-
-Approved Returned Rejected
-
-|
-
-v
-
-Resubmitted
-
-|
-
-v
-
-Under Review
+```mermaid
+flowchart TD
+    A[Draft] --> B[Sent]
+    B --> C[Pending Submission]
+    C --> D[Submitted]
+    D --> E[Under Review]
+    E --> F[Approved]
+    E --> G[Returned]
+    E --> H[Rejected]
+    G --> I[Resubmitted]
+    I --> E
+```
 
 **Overall Functional Traceability**
 
