@@ -96,7 +96,6 @@ flowchart TD
 | FR-DCP-007 | Initiate Data Collection | The system shall generate and send a data collection email to the selected Data Provider. | High | Pillar User | BR-DCP-007 | AC-DCP-007 | DEP-DCP-006 |
 | FR-DCP-008 | Initiate Data Collection | The system shall generate a unique Data Collection Request ID. | High | System | BR-DCP-008 | AC-DCP-008 | DEP-DCP-001 |
 | FR-DCP-009 | Initiate Data Collection | The system shall record the request status and timestamp of request initiation. | High | System | BR-DCP-009 | AC-DCP-009 | DEP-DCP-001 |
-| FR-DCP-010 | Initiate Data Collection | The system shall generate secure, one-time temporary access links for external contributors, managing expiry and revocation without exposing raw tokens. | High | System | BR-DCP-010 | AC-DCP-010 | DEP-DCP-001 |
 
 **F. Business Rules**
 
