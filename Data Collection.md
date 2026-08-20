@@ -48,8 +48,11 @@ flowchart TD
     
     G --> G1[ONLINE FORM]
     G --> G2[ATTACHMENT]
+    G --> G3[TEMPORARY ACCESS LINK]
     
-    G --> H[REVIEW REQUEST]
+    G1 --> H[REVIEW REQUEST]
+    G2 --> H
+    G3 --> H
     H --> I[SEND EMAIL]
     I --> J[TRACK REQUEST STATUS]
     
@@ -124,8 +127,10 @@ flowchart TD
     E --> F[Select Submission Method]
     F --> G[Online Form]
     F --> H[Attachment]
+    F --> H2[Temporary Access Link]
     G --> I[Review Request]
-    H --> I[Review Request]
+    H --> I
+    H2 --> I
     I --> J[Send Data Request]
     J --> K[Email Service]
     K --> L[Data Provider]
