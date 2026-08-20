@@ -10,6 +10,7 @@ The functionality supports two primary data submission mechanisms:
 
 1. **Online Form** – The data provider receives a link to an online data collection form and submits the required information directly through the application.
 2. **Attachment-Based Submission** – The data provider receives the data collection request through email and submits the requested data using the prescribed attachment/template.
+3. **Temporary Contributor Access** – The system generates secure, one-time, hash-only access links for external data providers to ensure secure, tokenless entry without exposing raw credentials. This includes token expiry monitoring and administrative resend/revoke controls.
 
 The system shall maintain the complete lifecycle of the data collection request, including request creation, email dispatch, submission status, reminders, and subsequent review.
 
@@ -92,6 +93,7 @@ flowchart TD
 | FR-DCP-007 | Initiate Data Collection | The system shall generate and send a data collection email to the selected Data Provider. | High | Pillar User | BR-DCP-007 | AC-DCP-007 | DEP-DCP-006 |
 | FR-DCP-008 | Initiate Data Collection | The system shall generate a unique Data Collection Request ID. | High | System | BR-DCP-008 | AC-DCP-008 | DEP-DCP-001 |
 | FR-DCP-009 | Initiate Data Collection | The system shall record the request status and timestamp of request initiation. | High | System | BR-DCP-009 | AC-DCP-009 | DEP-DCP-001 |
+| FR-DCP-010 | Initiate Data Collection | The system shall generate secure, one-time temporary access links for external contributors, managing expiry and revocation without exposing raw tokens. | High | System | BR-DCP-010 | AC-DCP-010 | DEP-DCP-001 |
 
 **F. Business Rules**
 
@@ -106,6 +108,7 @@ flowchart TD
 | BR-DCP-007 | An email shall only be sent when all mandatory request information has been completed. |
 | BR-DCP-008 | Each collection request shall have a unique system-generated Request ID. |
 | BR-DCP-009 | The system shall maintain an audit trail for request creation and email dispatch. |
+| BR-DCP-010 | The system shall enforce token secrecy for temporary access links; expired or administratively revoked links must immediately block access. |
 
 **G. Application Workflows**
 
@@ -189,6 +192,10 @@ The functionality shall support three modes of data ingestion:
 1. **Attachment Upload** – Data Provider uploads a completed data file.
 2. **Manual Entry** – Authorized user enters data directly into the application.
 3. **Online Form Submission** – Data Provider submits data through the online form.
+4. **API Integration** – Automated ingestion from authorized external ministry/department systems via REST APIs.
+5. **Unstructured Source Capture** – Automated extraction from URLs, email bodies, and system-generated PDFs.
+
+*Note: Scanned or non-machine-readable documents are ingested and securely stored as source artifacts, and are automatically routed for manual transcription or clarification (direct OCR is excluded in the primary phase).*
 
 The system shall validate the submitted data against the configured Data Collection Template and maintain the submission against the corresponding Data Collection Request.
 
@@ -351,6 +358,8 @@ The functionality shall allow the Pillar User to:
 
 * View submitted data.
 * Review uploaded attachments.
+* Process submissions through a dedicated **Validation Queue** employing a comprehensive Rule Catalogue (categorizing issues as Blockers, Errors, or Warnings).
+* Perform automated comparative analysis against historically approved data.
 * Validate data against business and template rules.
 * Identify errors or missing information.
 * Return the submission to the Data Provider for correction.

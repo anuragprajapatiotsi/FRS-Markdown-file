@@ -1,0 +1,358 @@
+## 7.8 Collection Requests and Assignment
+
+A request assigns data collection work to the correct source organization/officer for a template and indicator.
+
+|  |  |
+| --- | --- |
+| **Item** | **Details** |
+| Primary Screen(s) | Collection Request Creation |
+| Initiating Actor | Pillar Admin; Data Collection Officer |
+| Process Overview | User creates request draft, adds item/template instance, selects scope members, assigns officer, adds To/CC email recipients, sends request and tracks status events. |
+| Notifications / Scheduler / Reminder | On send, system creates email outbox and notification log records for To/CC recipients. Reminders and escalation are configurable based on due date and status. |
+
+|  |  |  |
+| --- | --- | --- |
+| **Sl.no** | **Sub Module** | **Functionality** |
+| 1 | Collection cycle | Reporting cycle and due window. |
+| 2 | Request header | Source organization/officer, due date, priority and status. |
+| 3 | Request item | Indicator/template instance item. |
+| 4 | Scope members | Requested dimension members/year/source scope. |
+| 5 | Assignments | Data provider/reviewer responsibility. |
+| 6 | Email recipients | To and CC recipient collections. |
+| 7 | Status trail | Append-only request events. |
+
+|  |  |
+| --- | --- |
+| **Data Aspect** | **Detail** |
+| Where Data Is Saved | requests.collection\_cycles, collection\_requests, collection\_request\_items, collection\_request\_scope\_members, template\_instances, request\_assignments, request\_status\_events, invitation\_access.notification\_outbox |
+| From Where Data Is Fetched | Request, items, assignments, scope and communication status |
+| Where Data Is Validated | Active template, source/officer validity, scope member belongs to template/dimension. |
+
+|  |  |
+| --- | --- |
+| **Screen Action ID** | **User Action** |
+| SCR-REQ-001 | Create request |
+| SCR-REQ-002 | Add item |
+| SCR-REQ-003 | Select template |
+| SCR-REQ-004 | Add scope |
+| SCR-REQ-005 | Assign officer |
+| SCR-REQ-006 | Add To/CC |
+| SCR-REQ-007 | Send request |
+| SCR-REQ-008 | Open detail modal |
+
+|  |  |  |
+| --- | --- | --- |
+| **Requirement ID** | **Functional Requirement** | **Acceptance Criteria** |
+| FR-REQ-001 | System shall create/update request draft, item, scope and assignment. | Request detail modal shows collection detail, item/scope, assignment and status trail. |
+| FR-REQ-002 | System shall support To and CC recipient collections for request communication. | Multiple recipients are stored and delivery status is tracked. |
+| FR-REQ-003 | System shall generate status events for draft/sent/opened/submitted/validated/reviewed/published flow. | Status trail is visible without exposing tokens. |
+
+|  |  |
+| --- | --- |
+| **Business Rule ID** | **Business Rule** |
+| BR-REQ-001 | Active template is required. |
+| BR-REQ-002 | Scope member must fit template/dimension. |
+| BR-REQ-003 | Assignment officer must belong to source organization. |
+
+|  |  |
+| --- | --- |
+| **Post Condition ID** | **Post Condition** |
+| POST-REQ-001 | Request is sent or saved as draft. |
+| POST-REQ-002 | Notification outbox rows exist. |
+| POST-REQ-003 | Invitation can be generated if required. |
+
+|  |  |
+| --- | --- |
+| **Test Scenario ID** | **Test Scenario** |
+| TC-REQ-001 | Create request with two items. |
+| TC-REQ-002 | Add To and CC recipients. |
+| TC-REQ-003 | Send request and see notification status. |
+| TC-REQ-004 | Invalid scope rejected. |
+
+## 7.9 Invitation Access and Temporary Contributor
+
+This module lets request-linked external contributors access only their assigned data entry page through a temporary link.
+
+|  |  |
+| --- | --- |
+| **Item** | **Details** |
+| Primary Screen(s) | Invitation Access Monitor; Temporary Contributor Setup |
+| Initiating Actor | System; Data Provider; Pillar Admin |
+| Process Overview | System generates invitation for assignment, stores hash-only token metadata, sends setup link by email and tracks first open, setup completed, revoked/expired state and audit events. |
+| Notifications / Scheduler / Reminder | Invitation generated, resent, revoked, expired and first-open events create email delivery and notification log records. Raw link is shown only at generation time if policy allows. |
+
+|  |  |  |
+| --- | --- | --- |
+| **Sl.no** | **Sub Module** | **Functionality** |
+| 1 | Invitation generation | Generate request-linked setup/access link. |
+| 2 | Hash-only token metadata | Store hash and expiry, not raw token. |
+| 3 | Invitation monitor | Track generated/sent/opened/setup/revoked/expired. |
+| 4 | Audit trail | View invitation events. |
+| 5 | Resend/revoke | Governed resend/revoke visual/admin actions. |
+
+|  |  |
+| --- | --- |
+| **Data Aspect** | **Detail** |
+| Where Data Is Saved | invitation\_access.external\_contributor\_invitations, invitation\_setup\_tokens, invitation\_events, notification\_outbox |
+| From Where Data Is Fetched | Invitation status, token metadata and delivery event |
+| Where Data Is Validated | Assignment link, expiry, status and token secrecy. |
+
+|  |  |
+| --- | --- |
+| **Screen Action ID** | **User Action** |
+| SCR-INV-001 | Generate invitation |
+| SCR-INV-002 | View monitor |
+| SCR-INV-003 | Open detail |
+| SCR-INV-004 | Resend |
+| SCR-INV-005 | Revoke |
+| SCR-INV-006 | Check first-open |
+
+|  |  |  |
+| --- | --- | --- |
+| **Requirement ID** | **Functional Requirement** | **Acceptance Criteria** |
+| FR-INV-001 | System shall generate request-linked one-time setup link without storing raw token. | Normal read APIs show status only, never token/hash. |
+| FR-INV-002 | System shall monitor invitation status and audit trail. | Detail modal shows request, assignment, officer, expiry, first opened and setup completed. |
+| FR-INV-003 | System shall support visual/admin actions for resend/revoke/copy immediate link where governed. | Status event is written for each action. |
+
+|  |  |
+| --- | --- |
+| **Business Rule ID** | **Business Rule** |
+| BR-INV-001 | Expired/revoked link cannot open data entry. |
+| BR-INV-002 | Invitation is tied to one or more assignment. |
+| BR-INV-003 | Token hash is never displayed. |
+
+|  |  |
+| --- | --- |
+| **Post Condition ID** | **Post Condition** |
+| POST-INV-001 | Invitation status updated. |
+| POST-INV-002 | Email/outbox status available. |
+| POST-INV-003 | Contributor can open only assigned template. |
+
+|  |  |
+| --- | --- |
+| **Test Scenario ID** | **Test Scenario** |
+| TC-INV-001 | Generate invitation. |
+| TC-INV-002 | Open monitor. |
+| TC-INV-003 | Expired link blocked. |
+| TC-INV-004 | Raw token absent in normal readback. |
+
+## 7.10 Data Entry, Excel Upload and Ingestion
+
+This module receives values entered in the template or uploaded in Excel and converts them to staged records.
+
+|  |  |
+| --- | --- |
+| **Item** | **Details** |
+| Primary Screen(s) | Department Data Entry; Ingestion Readback |
+| Initiating Actor | Data Provider; Ingestion Admin; System |
+| Process Overview | Data provider opens assigned template, enters values, edits allowed year headers, adds comments/notes, saves draft, validates preview and submits. System creates submission/version/manifest/job/run/events and staged records with dimension tuple and measure. Scanned or non-machine-readable submissions shall be stored as source artifacts and shall be converted only through manual entry, template-based resubmission or clarification workflow; they shall not be treated as validated data until structured and approved. |
+| Notifications / Scheduler / Reminder | Draft saved is application-level only. Submit creates email notification and notification log records for validator/reviewer where configured. Failed ingestion creates operations alert. |
+
+|  |  |  |
+| --- | --- | --- |
+| **Sl.no** | **Sub Module** | **Functionality** |
+| 1 | Portal data entry | Fill governed template values. |
+| 2 | Excel upload/ PDF/ Word | Upload approved sample format. |
+| 3 | Draft/resume | Save and resume work. |
+| 4 | Submission version | Each submit creates version. |
+| 5 | Manifest | File/payload reference without exposing raw payload. |
+| 6 | Staged records | Structured rows by cell, dimensions and measure. |
+| 7 | Import history | View accepted/rejected/warning summary. |
+| 8 | Non-machine-readable source handling | Preserve scanned/non-machine-readable submissions as source artifacts and route them through manual entry, resubmission or clarification workflow. |
+
+|  |  |
+| --- | --- |
+| **Data Aspect** | **Detail** |
+| Where Data Is Saved | ingestion.submissions, submission\_versions, payload\_manifests, ingestion\_jobs, ingestion\_runs, staged\_record\_index, staged\_record\_dimensions, ingestion\_events |
+| From Where Data Is Fetched | Submission, file reference, staged rows and events |
+| Where Data Is Validated | Template cell mapping, datatype, duplicate year/header and allowed editable scope. |
+
+|  |  |
+| --- | --- |
+| **Screen Action ID** | **User Action** |
+| SCR-ING-001 | Open assignment |
+| SCR-ING-002 | Enter value |
+| SCR-ING-003 | Add comment |
+| SCR-ING-004 | Save draft |
+| SCR-ING-005 | Upload Excel/ PDF/ Word |
+| SCR-ING-006 | Validate preview |
+| SCR-ING-007 | Submit |
+| SCR-ING-008 | View ingestion readback |
+
+|  |  |  |
+| --- | --- | --- |
+| **Requirement ID** | **Functional Requirement** | **Acceptance Criteria** |
+| FR-ING-001 | System shall render data-entry template from published template contract. | Only editable value/year cells can be edited. |
+| FR-ING-002 | System shall support portal data entry and Excel upload, with sample format, duplicate detection, validation summary and rejected record download. | Upload result shows accepted/rejected/warning counts and history. |
+| FR-ING-003 | System shall stage values with exact axis tuple and measure code. | Each staged record can be traced to request, template cell, dimensions and measure. |
+| FR-ING-004 | System shall preserve scanned or non-machine-readable submissions as source artifacts and shall support manual entry, template-based resubmission or clarification workflow for conversion into structured data; OCR is not included in Phase I unless separately approved by MoSPI. | Non-machine-readable source files are stored and traceable, but are not treated as validated data until structured, validated and approved through the configured workflow. |
+| FR-ING-005 | System shall support collection of ministry submissions received through email attachments, Word documents, email body text, URLs, website links, system generated PDF, supporting images/charts and approved document formats. | System supports capture of ministry submission source records in supported formats. |
+| FR-ING-006 | System shall support API-based data ingestion from approved ministry and department systems where APIs are available. | API-based data ingestion is supported for approved source systems. |
+
+|  |  |
+| --- | --- |
+| **Business Rule ID** | **Business Rule** |
+| BR-ING-001 | Raw payload and source hash are not shown in normal screens. |
+| BR-ING-002 | Duplicate year/header is warned or rejected as configured. |
+| BR-ING-003 | Submitted version does not overwrite earlier version. |
+| BR-ING-004 | Scanned/non-machine-readable submissions are source artifacts only and shall not be used for publication or dashboard output until converted to structured data and approved. |
+
+|  |  |
+| --- | --- |
+| **Post Condition ID** | **Post Condition** |
+| POST-ING-001 | Submission version exists. |
+| POST-ING-002 | Manifest and staged records exist. |
+| POST-ING-003 | Validation can run. |
+| POST-ING-004 | Source artifact is linked to submission, manual entry/resubmission or clarification record. |
+
+|  |  |
+| --- | --- |
+| **Test Scenario ID** | **Test Scenario** |
+| TC-ING-001 | Fill numeric cell. |
+| TC-ING-002 | Add allowed year. |
+| TC-ING-003 | Upload Excel with bad row/column and download rejected records. |
+| TC-ING-004 | Submit creates staged records. |
+| TC-ING-005 | Upload a scanned/non-machine-readable source artifact and verify it is retained for audit but excluded from validated data until structured and approved. |
+
+## 7.11 Validation Rule Execution and Report
+
+Validation checks submitted/staged data before review.
+
+|  |  |
+| --- | --- |
+| **Item** | **Details** |
+| Primary Screen(s) | Validation Queue; Validation Report |
+| Initiating Actor | Validator; System |
+| Process Overview | Validator opens queue, selects indicator/submission, views goal-target-indicator context, runs or reads validation result, checks errors/warnings/comparison and sends back or forwards to review. Validation rule catalogue and thresholds shall be based on inputs approved by functional nodal officers. |
+| Notifications / Scheduler / Reminder | Validation complete, validation failed and send-back events create email notifications and notification log records for data provider/reviewer where configured. |
+
+|  |  |  |
+| --- | --- | --- |
+| **Sl.no** | **Sub Module** | **Functionality** |
+| 1 | Validation queue | Submitted items waiting for validation. |
+| 2 | Rule catalogue | Validation rules and bindings. |
+| 3 | Validation run | Execute/read run for submission version. |
+| 4 | Result detail | Record, rule, severity, message and affected cell. |
+| 5 | Comparison | Previous approved comparison. |
+| 6 | Send-back/forward | Move to data entry or review. |
+
+|  |  |
+| --- | --- |
+| **Data Aspect** | **Detail** |
+| Where Data Is Saved | validation.validation\_rules, validation\_rule\_bindings, validation\_runs, validation\_results, validation\_comparison\_results |
+| From Where Data Is Fetched | Rules, runs, results and comparisons |
+| Where Data Is Validated | Rule binding, staged record, severity, status and comparison reference. |
+
+|  |  |
+| --- | --- |
+| **Screen Action ID** | **User Action** |
+| SCR-VAL-001 | Open queue |
+| SCR-VAL-002 | Open report |
+| SCR-VAL-003 | View template/cell |
+| SCR-VAL-004 | Run validation |
+| SCR-VAL-005 | Send back |
+| SCR-VAL-006 | Continue to review |
+
+|  |  |  |
+| --- | --- | --- |
+| **Requirement ID** | **Functional Requirement** | **Acceptance Criteria** |
+| FR-VAL-001 | System shall show validation queue by submitted request item. | Queue shows source, indicator, status, pending and failed counts. |
+| FR-VAL-002 | System shall execute/read validation rules and show record-level errors/warnings. | Report shows selected record, rule, severity, status, message and affected cell. |
+| FR-VAL-003 | System shall compare current value with previous approved value where available. | Comparison states reference/no reference/difference are shown. |
+
+|  |  |
+| --- | --- |
+| **Business Rule ID** | **Business Rule** |
+| BR-VAL-001 | Blocker/error rules prevent review forwarding unless resolved/overridden by approved policy. |
+| BR-VAL-002 | Validation results must not expose raw payload. |
+| BR-VAL-003 | Every run/result has status trail. |
+
+|  |  |
+| --- | --- |
+| **Post Condition ID** | **Post Condition** |
+| POST-VAL-001 | Validation run/results exist. |
+| POST-VAL-002 | Review task can be created if pass/allowed. |
+| POST-VAL-003 | Send-back comment is visible to data provider. |
+
+|  |  |
+| --- | --- |
+| **Test Scenario ID** | **Test Scenario** |
+| TC-VAL-001 | Run validation pass. |
+| TC-VAL-002 | Missing numeric value produces error. |
+| TC-VAL-003 | No previous reference returns clean status. |
+| TC-VAL-004 | Send back sends notification. |
+
+## 7.12 Review, Approval and Published Fact Creation
+
+Reviewers take the decision on validated submissions. Final approval publishes approved facts.
+
+|  |  |
+| --- | --- |
+| **Item** | **Details** |
+| Primary Screen(s) | Review / Approval |
+| Initiating Actor | Reviewer; Approver; Pillar Admin |
+| Process Overview | Reviewer opens task, sees full request-data entry-ingestion-validation-review trail, compares previous approved data, records note and action. Terminal approval writes published snapshot and observations. |
+| Notifications / Scheduler / Reminder | Task assigned, clarification requested, send-back, rejection, final approval and publish events create email notifications and notification log records as configured. |
+
+|  |  |  |
+| --- | --- | --- |
+| **Sl.no** | **Sub Module** | **Functionality** |
+| 1 | Task queue | Assigned reviewer tasks. |
+| 2 | Review workspace | Request-data entry-ingestion-validation-review trail. |
+| 3 | Action logs | Approve/reject/send back/clarify actions. |
+| 4 | Approval logs | Review level decisions. |
+| 5 | Previous approved data | Comparison with last approved facts. |
+| 6 | Publish trigger | Final approval publishes facts. |
+
+|  |  |
+| --- | --- |
+| **Data Aspect** | **Detail** |
+| Where Data Is Saved | review.review\_tasks, review.review\_action\_logs, review.approval\_logs, published\_data.approved\_snapshots, approved\_observations |
+| From Where Data Is Fetched | Review decisions and final publish output |
+| Where Data Is Validated | Task status, terminal action, duplicate final approval guard and approved fact generation. |
+
+|  |  |
+| --- | --- |
+| **Screen Action ID** | **User Action** |
+| SCR-REV-001 | Open task |
+| SCR-REV-002 | Review validation |
+| SCR-REV-003 | Compare previous data |
+| SCR-REV-004 | Add note |
+| SCR-REV-005 | Approve |
+| SCR-REV-006 | Reject |
+| SCR-REV-007 | Send back |
+| SCR-REV-008 | Request clarification |
+
+|  |  |  |
+| --- | --- | --- |
+| **Requirement ID** | **Functional Requirement** | **Acceptance Criteria** |
+| FR-REV-001 | System shall show review task queue and full context trail. | Reviewer can see request, source, template, validation and previous approved data. |
+| FR-REV-002 | System shall support approve, reject, send-back and request-clarification actions with comments. | Action log and approval log are written. |
+| FR-REV-003 | System shall prevent duplicate final approval and publish approved facts only once per approved action/snapshot rule. | Duplicate final approval is blocked or superseded as configured. |
+| FR-REV-004 | System shall enforce Maker-Checker separation for review, approval, publishing and other configured governance workflows so that the maker/initiator and checker/approver roles remain distinct as per MoSPI-approved workflow rules. | A user who creates or submits a workflow item cannot approve the same item where Maker-Checker separation is configured; override, if any, requires configured authorization and audit justification. |
+
+|  |  |
+| --- | --- |
+| **Business Rule ID** | **Business Rule** |
+| BR-REV-001 | Terminal action requires comment where configured. |
+| BR-REV-002 | Final approval requires valid validation context. |
+| BR-REV-003 | Reviewer cannot change submitted values directly. |
+| BR-REV-004 | Maker-Checker shall be enforced for review/approval workflows. The maker/initiator and checker/approver shall be separate users or roles wherever configured by MoSPI. |
+
+|  |  |
+| --- | --- |
+| **Post Condition ID** | **Post Condition** |
+| POST-REV-001 | Review task status updated. |
+| POST-REV-002 | Approval/action log exists. |
+| POST-REV-003 | Published snapshot/facts created after final approval. |
+| POST-REV-004 | Maker-Checker validation result and approving user identity are stored in the workflow audit trail. |
+
+|  |  |
+| --- | --- |
+| **Test Scenario ID** | **Test Scenario** |
+| TC-REV-001 | Approve path publishes facts. |
+| TC-REV-002 | Reject path records reason. |
+| TC-REV-003 | Clarification sends notification. |
+| TC-REV-004 | Duplicate final approval guard works. |
+| TC-REV-005 | Maker user attempts to approve own submission and is blocked as per configured workflow rule. |
+
