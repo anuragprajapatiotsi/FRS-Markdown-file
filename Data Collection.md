@@ -6,7 +6,7 @@
 
 The **Initiate Data Collection** functionality enables the Pillar User to initiate a data collection request from the system by selecting the required data collection template, defining the applicable data provider/source, and sending the request through email.
 
-The functionality supports two primary data submission mechanisms:
+The functionality supports the following key data submission and access mechanisms:
 
 1. **Online Form** – The data provider receives a link to an online data collection form and submits the required information directly through the application.
 2. **Attachment-Based Submission** – The data provider receives the data collection request through email and submits the requested data using the prescribed attachment/template.
@@ -187,7 +187,7 @@ flowchart TD
 
 The **Data Ingestion** functionality enables the system to receive data submitted by Data Providers through the configured collection mechanism.
 
-The functionality shall support three modes of data ingestion:
+The functionality shall support five modes of data ingestion:
 
 1. **Attachment Upload** – Data Provider uploads a completed data file.
 2. **Manual Entry** – Authorized user enters data directly into the application.
