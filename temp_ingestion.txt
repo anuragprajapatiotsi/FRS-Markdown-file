@@ -1,0 +1,191 @@
+**4.2.2.2 Data Ingestion**
+
+**A. Functional Purpose**
+
+The **Data Ingestion** functionality enables the system to receive data submitted by Data Providers through the configured collection mechanism.
+
+The functionality shall support five modes of data ingestion:
+
+1. **Attachment Upload** – Data Provider uploads a completed data file.
+2. **Manual Entry** – Authorized user enters data directly into the application.
+3. **Online Form Submission** – Data Provider submits data through the online form.
+4. **API Integration** – Automated ingestion from authorized external ministry/department systems via REST APIs.
+5. **Unstructured Source Capture** – Automated extraction from URLs, email bodies, and system-generated PDFs.
+
+*Note: Scanned or non-machine-readable documents are ingested and securely stored as source artifacts, and are automatically routed for manual transcription or clarification (direct OCR is excluded in the primary phase).*
+
+The system shall validate the submitted data against the configured Data Collection Template and maintain the submission against the corresponding Data Collection Request.
+
+**B. Business Definitions**
+
+| **Term** | **Definition** |
+| --- | --- |
+| Data Submission | Data submitted against a Data Collection Request. |
+| Manual Entry | Direct entry of required data into application fields by an authorized user. |
+| Attachment Upload | Upload of a file containing requested data. |
+| Online Form Submission | Submission of data through a system-generated online form. |
+| Validation | System-based verification of data format, completeness and configured business rules. |
+| Submission Status | Current state of a submitted data package. |
+| Data Source | Source/entity from which the data originates. |
+
+**C. Functional Hierarchy Diagram**
+
+**Diagram type:** Functional hierarchy diagram  
+**Diagram ID:** DIA-DCP-002
+
+```mermaid
+flowchart TD
+    A[Data Ingestion]
+    A --> B[Attachment Upload]
+    B --> B1[Select File]
+    B --> B2[Upload File]
+    B --> B3[File Validation]
+    B --> B4[Data Validation]
+    
+    A --> C[Manual Entry]
+    C --> C1[Open Data Form]
+    C --> C2[Enter Data]
+    C --> C3[Field Validation]
+    C --> C4[Submit]
+    
+    A --> D[Online Form Submission]
+    D --> D1[Open Form]
+    D --> D2[Enter Data]
+    D --> D3[Validate Data]
+    D --> D4[Submit]
+    
+    A --> E[API Integration]
+    E --> E1[Receive API Payload]
+    E --> E2[Authenticate Source]
+    E --> E3[Payload Validation]
+    E --> E4[Stage Records]
+    
+    A --> F[Unstructured Source Capture]
+    F --> F1[Receive Email / URL / PDF]
+    F --> F2[Store as Source Artifact]
+    F --> F3[Route for Manual Transcription]
+    F3 --> C
+```
+
+**D. Ownership, Approval Authority, Actors and Access**
+
+|  |  |  |  |
+| --- | --- | --- | --- |
+| **Functional Area** | **Owning Division** | **Operational Ownership** | **Approval Authority** |
+| Attachment Upload | Pillar | Data Provider / Authorized User | Pillar User |
+| Manual Data Entry | Pillar | Authorized User | Pillar User |
+| Online Form Submission | Pillar | Data Provider | Pillar User |
+| API Integration | Application | External System / System | Pillar User |
+| Unstructured Source Capture | Application | System (Capture) / Pillar User (Transcription) | Pillar User |
+| Data Validation | Application | System | Pillar User |
+| Submission Management | Pillar | Pillar User | Pillar Manager |
+
+**E. Functional Requirements**
+
+|  |  |  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| **Requirement ID** | **Module Name** | **Requirement Description** | **Priority** | **Stakeholder** | **Business Rule ID** | **Acceptance Criteria ID** | **Dependency ID** |
+| FR-DCP-010 | Data Ingestion | The system shall allow a Data Provider to access the assigned data collection request. | High | Data Provider | BR-DCP-010 | AC-DCP-010 | DEP-DCP-007 |
+| FR-DCP-011 | Data Ingestion | The system shall support attachment upload for applicable collection requests. | High | Data Provider | BR-DCP-011 | AC-DCP-011 | DEP-DCP-008 |
+| FR-DCP-012 | Data Ingestion | The system shall support manual data entry for authorized users. | High | Authorized User | BR-DCP-012 | AC-DCP-012 | DEP-DCP-003 |
+| FR-DCP-013 | Data Ingestion | The system shall support online form submission. | High | Data Provider | BR-DCP-013 | AC-DCP-013 | DEP-DCP-003 |
+| FR-DCP-014 | Data Ingestion | The system shall validate mandatory fields before submission. | High | System | BR-DCP-014 | AC-DCP-014 | DEP-DCP-003 |
+| FR-DCP-015 | Data Ingestion | The system shall validate uploaded files against configured file rules. | High | System | BR-DCP-015 | AC-DCP-015 | DEP-DCP-008 |
+| FR-DCP-016 | Data Ingestion | The system shall associate every submission with the corresponding Data Collection Request ID. | High | System | BR-DCP-016 | AC-DCP-016 | DEP-DCP-007 |
+| FR-DCP-017 | Data Ingestion | The system shall record submission date, time, submitting actor and submission method. | High | System | BR-DCP-017 | AC-DCP-017 | DEP-DCP-007 |
+| FR-DCP-018 | Data Ingestion | The system shall update the Data Collection Request status after successful submission. | High | System | BR-DCP-018 | AC-DCP-018 | DEP-DCP-007 |
+
+**F. Business Rules**
+
+| **Business Rule ID** | **Business Rule** |
+| --- | --- |
+| BR-DCP-010 | A Data Provider shall only access requests assigned to them. |
+| BR-DCP-011 | Only configured and supported file formats shall be accepted. |
+| BR-DCP-012 | Manual entry shall only be available to users with appropriate access. |
+| BR-DCP-013 | Online forms shall display only fields configured for the associated template. |
+| BR-DCP-014 | Mandatory fields must be completed before submission. |
+| BR-DCP-015 | Uploaded files shall be validated for file type, structure and required content. |
+| BR-DCP-016 | Every submission shall be linked to exactly one Data Collection Request. |
+| BR-DCP-017 | The system shall maintain submission audit information. |
+| BR-DCP-018 | A successfully submitted request shall move to the appropriate review status. |
+
+**G. Application Workflows**
+
+**Workflow ID:** WF-DCP-002
+
+```mermaid
+flowchart TD
+    A[Data Provider] --> B[Open Data Collection Request]
+    B --> C[View Data Collection Template]
+    C --> D[Upload Attachment]
+    C --> E[Manual Entry]
+    C --> F[Online Form]
+    
+    A2[External API System] --> D2[API Integration]
+    A3[Email / Unstructured Source] --> D3[Unstructured Source Capture]
+    
+    D --> G[Validate Submission]
+    E --> G
+    F --> G
+    D2 --> G
+    
+    D3 --> D3_a[Store as Source Artifact]
+    D3_a --> D3_b[Route for Transcription]
+    D3_b --> E
+    G --> H{Valid?}
+    H -->|Invalid| I[Show Errors]
+    H -->|Valid| J[Submit]
+    J --> K[Create Data Submission]
+    K --> L[Update Request Status]
+    L --> M[Under Review]
+```
+
+|  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- |
+| **Step** | **Actor/System** | **Action** | **System Response** | **Status/Output** | **Linked Requirement IDs** |
+| 1 | Data Provider | Opens assigned request | System displays request and template | Request opened | FR-DCP-010 |
+| 2 | Data Provider | Selects submission mechanism | System displays corresponding interface | Submission started | FR-DCP-011 to FR-DCP-013 |
+| 3 | Data Provider | Enters/uploads data | System receives submission | Data captured | FR-DCP-011 to FR-DCP-013 |
+| 4 | System | Validates data | System checks configured rules | Valid/Invalid | FR-DCP-014, FR-DCP-015 |
+| 5 | Data Provider | Corrects validation errors if applicable | System revalidates | Valid submission | FR-DCP-014 |
+| 6 | Data Provider | Submits data | System creates submission record | Submission created | FR-DCP-016 |
+| 7 | System | Records submission metadata | System stores actor, time and method | Audit record created | FR-DCP-017 |
+| 8 | System | Updates request | System changes status | Status = Under Review | FR-DCP-018 |
+
+**H. Module-wise UI/Wireframes**
+
+|  |  |  |  |  |  |  |
+| --- | --- | --- | --- | --- | --- | --- |
+| **UI ID** | **Screen/Page** | **Wireframe/Mockup Ref** | **Authorized Actor** | **Fields/Controls** | **Actions/States/Validations** | **Linked Requirement IDs** |
+| UI-DCP-005 | Data Collection Request | WF-DCP-UI-005 | Data Provider | Request details, collection period, due date | View request | FR-DCP-010 |
+| UI-DCP-006 | Attachment Upload | WF-DCP-UI-006 | Data Provider | File upload, file information | File type/size/format validation | FR-DCP-011, FR-DCP-015 |
+| UI-DCP-007 | Manual Data Entry | WF-DCP-UI-007 | Authorized User | Configured template fields | Mandatory field and data validation | FR-DCP-012, FR-DCP-014 |
+| UI-DCP-008 | Online Data Collection Form | WF-DCP-UI-008 | Data Provider | Configured data fields | Field-level validation | FR-DCP-013, FR-DCP-014 |
+| UI-DCP-009 | Submission Confirmation | WF-DCP-UI-009 | Data Provider | Submission summary, Request ID | Submit/Cancel | FR-DCP-016 to FR-DCP-018 |
+
+**I. Dependencies**
+
+|  |  |  |  |  |
+| --- | --- | --- | --- | --- |
+| **Dependency ID** | **Dependency/Required Input** | **Owner/Source** | **Required By** | **Impact if Unavailable** |
+| DEP-DCP-007 | Active Data Collection Request | Data Collection Process | Submission | Data cannot be submitted |
+| DEP-DCP-008 | File storage/upload service | Application/Infrastructure | Attachment upload | File submission unavailable |
+| DEP-DCP-003 | Data Collection Template | Pillar Configuration | Data validation | Data cannot be validated |
+| DEP-DCP-009 | Validation rules | Template Configuration | Submission validation | Invalid data may be accepted |
+
+**J. Acceptance Criteria**
+
+|  |  |  |  |
+| --- | --- | --- | --- |
+| **Acceptance Criteria ID** | **Linked Requirements** | **Scenario** | **Acceptance Criteria** |
+| AC-DCP-010 | FR-DCP-010 | Provider opens request | Provider can access only assigned requests. |
+| AC-DCP-011 | FR-DCP-011 | Provider uploads attachment | Supported files can be uploaded successfully. |
+| AC-DCP-012 | FR-DCP-012 | Authorized user performs manual entry | User can enter and submit configured data. |
+| AC-DCP-013 | FR-DCP-013 | Provider submits online form | Form data can be submitted successfully. |
+| AC-DCP-014 | FR-DCP-014 | Required field is missing | System prevents submission and displays validation message. |
+| AC-DCP-015 | FR-DCP-015 | Invalid file is uploaded | System rejects the file and displays the reason. |
+| AC-DCP-016 | FR-DCP-016 | Submission is created | Submission is linked to the correct Request ID. |
+| AC-DCP-017 | FR-DCP-017 | Submission succeeds | Submission metadata is recorded. |
+| AC-DCP-018 | FR-DCP-018 | Valid submission is completed | Request status changes to Under Review. |
+
+**4.2.2.3 Review & Approve**

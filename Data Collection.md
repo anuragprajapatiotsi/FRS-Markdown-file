@@ -262,6 +262,8 @@ flowchart TD
 | Attachment Upload | Pillar | Data Provider / Authorized User | Pillar User |
 | Manual Data Entry | Pillar | Authorized User | Pillar User |
 | Online Form Submission | Pillar | Data Provider | Pillar User |
+| API Integration | Application | External System / System | Pillar User |
+| Unstructured Source Capture | Application | System (Capture) / Pillar User (Transcription) | Pillar User |
 | Data Validation | Application | System | Pillar User |
 | Submission Management | Pillar | Pillar User | Pillar Manager |
 
@@ -274,11 +276,13 @@ flowchart TD
 | FR-DCP-011 | Data Ingestion | The system shall support attachment upload for applicable collection requests. | High | Data Provider | BR-DCP-011 | AC-DCP-011 | DEP-DCP-008 |
 | FR-DCP-012 | Data Ingestion | The system shall support manual data entry for authorized users. | High | Authorized User | BR-DCP-012 | AC-DCP-012 | DEP-DCP-003 |
 | FR-DCP-013 | Data Ingestion | The system shall support online form submission. | High | Data Provider | BR-DCP-013 | AC-DCP-013 | DEP-DCP-003 |
-| FR-DCP-014 | Data Ingestion | The system shall validate mandatory fields before submission. | High | System | BR-DCP-014 | AC-DCP-014 | DEP-DCP-003 |
-| FR-DCP-015 | Data Ingestion | The system shall validate uploaded files against configured file rules. | High | System | BR-DCP-015 | AC-DCP-015 | DEP-DCP-008 |
-| FR-DCP-016 | Data Ingestion | The system shall associate every submission with the corresponding Data Collection Request ID. | High | System | BR-DCP-016 | AC-DCP-016 | DEP-DCP-007 |
-| FR-DCP-017 | Data Ingestion | The system shall record submission date, time, submitting actor and submission method. | High | System | BR-DCP-017 | AC-DCP-017 | DEP-DCP-007 |
-| FR-DCP-018 | Data Ingestion | The system shall update the Data Collection Request status after successful submission. | High | System | BR-DCP-018 | AC-DCP-018 | DEP-DCP-007 |
+| FR-DCP-014 | Data Ingestion | The system shall support automated API-based data ingestion from authorized external systems. | Medium | System | BR-DCP-014 | AC-DCP-014 | DEP-DCP-007 |
+| FR-DCP-015 | Data Ingestion | The system shall support capturing unstructured sources (emails, URLs) and storing them strictly as source artifacts for manual transcription routing. | High | System | BR-DCP-015 | AC-DCP-015 | DEP-DCP-007 |
+| FR-DCP-016 | Data Ingestion | The system shall validate mandatory fields before submission. | High | System | BR-DCP-016 | AC-DCP-016 | DEP-DCP-003 |
+| FR-DCP-017 | Data Ingestion | The system shall validate uploaded files against configured file rules. | High | System | BR-DCP-017 | AC-DCP-017 | DEP-DCP-008 |
+| FR-DCP-018 | Data Ingestion | The system shall associate every submission with the corresponding Data Collection Request ID. | High | System | BR-DCP-018 | AC-DCP-018 | DEP-DCP-007 |
+| FR-DCP-019 | Data Ingestion | The system shall record submission date, time, submitting actor and submission method. | High | System | BR-DCP-019 | AC-DCP-019 | DEP-DCP-007 |
+| FR-DCP-020 | Data Ingestion | The system shall update the Data Collection Request status after successful submission. | High | System | BR-DCP-020 | AC-DCP-020 | DEP-DCP-007 |
 
 **F. Business Rules**
 
@@ -288,11 +292,13 @@ flowchart TD
 | BR-DCP-011 | Only configured and supported file formats shall be accepted. |
 | BR-DCP-012 | Manual entry shall only be available to users with appropriate access. |
 | BR-DCP-013 | Online forms shall display only fields configured for the associated template. |
-| BR-DCP-014 | Mandatory fields must be completed before submission. |
-| BR-DCP-015 | Uploaded files shall be validated for file type, structure and required content. |
-| BR-DCP-016 | Every submission shall be linked to exactly one Data Collection Request. |
-| BR-DCP-017 | The system shall maintain submission audit information. |
-| BR-DCP-018 | A successfully submitted request shall move to the appropriate review status. |
+| BR-DCP-014 | API payloads must be authenticated against pre-configured source credentials before processing. |
+| BR-DCP-015 | Scanned or non-machine-readable submissions shall not be processed as structured data but retained as source artifacts. |
+| BR-DCP-016 | Mandatory fields must be completed before submission. |
+| BR-DCP-017 | Uploaded files shall be validated for file type, structure and required content. |
+| BR-DCP-018 | Every submission shall be linked to exactly one Data Collection Request. |
+| BR-DCP-019 | The system shall maintain submission audit information. |
+| BR-DCP-020 | A successfully submitted request shall move to the appropriate review status. |
 
 **G. Application Workflows**
 
@@ -300,29 +306,38 @@ flowchart TD
 
 ```mermaid
 flowchart TD
+    %% Initiation Triggers
     A[Data Provider] --> B[Open Data Collection Request]
-    B --> C[View Data Collection Template]
+    A2[External API System] --> D2[Transmit API Payload]
+    A3[Unstructured Source] --> D3[Receive Email/PDF/URL]
+
+    %% Data Provider Flow
+    B --> C[Select Submission Method]
     C --> D[Upload Attachment]
     C --> E[Manual Entry]
     C --> F[Online Form]
     
-    A2[External API System] --> D2[API Integration]
-    A3[Email / Unstructured Source] --> D3[Unstructured Source Capture]
+    %% Unstructured Capture Flow
+    D3 --> D3_a[Store strictly as Source Artifact]
+    D3_a --> D3_b[Route for Manual Transcription]
+    D3_b --> E
     
+    %% Convergence to Validation
     D --> G[Validate Submission]
     E --> G
     F --> G
     D2 --> G
     
-    D3 --> D3_a[Store as Source Artifact]
-    D3_a --> D3_b[Route for Transcription]
-    D3_b --> E
-    G --> H{Valid?}
-    H -->|Invalid| I[Show Errors]
-    H -->|Valid| J[Submit]
-    J --> K[Create Data Submission]
+    %% Validation & Correction Loop
+    G --> H{Is Data Valid?}
+    H -->|No| I[Show Errors / Return Error Code]
+    I -->|Correction| G
+    
+    %% Final Submission
+    H -->|Yes| J[Submit Data]
+    J --> K[Create Data Submission Record]
     K --> L[Update Request Status]
-    L --> M[Under Review]
+    L --> M((Status: Under Review))
 ```
 
 |  |  |  |  |  |  |
@@ -331,11 +346,11 @@ flowchart TD
 | 1 | Data Provider | Opens assigned request | System displays request and template | Request opened | FR-DCP-010 |
 | 2 | Data Provider | Selects submission mechanism | System displays corresponding interface | Submission started | FR-DCP-011 to FR-DCP-013 |
 | 3 | Data Provider | Enters/uploads data | System receives submission | Data captured | FR-DCP-011 to FR-DCP-013 |
-| 4 | System | Validates data | System checks configured rules | Valid/Invalid | FR-DCP-014, FR-DCP-015 |
-| 5 | Data Provider | Corrects validation errors if applicable | System revalidates | Valid submission | FR-DCP-014 |
-| 6 | Data Provider | Submits data | System creates submission record | Submission created | FR-DCP-016 |
-| 7 | System | Records submission metadata | System stores actor, time and method | Audit record created | FR-DCP-017 |
-| 8 | System | Updates request | System changes status | Status = Under Review | FR-DCP-018 |
+| 4 | System | Validates data | System checks configured rules | Valid/Invalid | FR-DCP-016, FR-DCP-017 |
+| 5 | Data Provider | Corrects validation errors if applicable | System revalidates | Valid submission | FR-DCP-016 |
+| 6 | Data Provider | Submits data | System creates submission record | Submission created | FR-DCP-018 |
+| 7 | System | Records submission metadata | System stores actor, time and method | Audit record created | FR-DCP-019 |
+| 8 | System | Updates request | System changes status | Status = Under Review | FR-DCP-020 |
 
 **H. Module-wise UI/Wireframes**
 
@@ -343,10 +358,10 @@ flowchart TD
 | --- | --- | --- | --- | --- | --- | --- |
 | **UI ID** | **Screen/Page** | **Wireframe/Mockup Ref** | **Authorized Actor** | **Fields/Controls** | **Actions/States/Validations** | **Linked Requirement IDs** |
 | UI-DCP-005 | Data Collection Request | WF-DCP-UI-005 | Data Provider | Request details, collection period, due date | View request | FR-DCP-010 |
-| UI-DCP-006 | Attachment Upload | WF-DCP-UI-006 | Data Provider | File upload, file information | File type/size/format validation | FR-DCP-011, FR-DCP-015 |
-| UI-DCP-007 | Manual Data Entry | WF-DCP-UI-007 | Authorized User | Configured template fields | Mandatory field and data validation | FR-DCP-012, FR-DCP-014 |
-| UI-DCP-008 | Online Data Collection Form | WF-DCP-UI-008 | Data Provider | Configured data fields | Field-level validation | FR-DCP-013, FR-DCP-014 |
-| UI-DCP-009 | Submission Confirmation | WF-DCP-UI-009 | Data Provider | Submission summary, Request ID | Submit/Cancel | FR-DCP-016 to FR-DCP-018 |
+| UI-DCP-006 | Attachment Upload | WF-DCP-UI-006 | Data Provider | File upload, file information | File type/size/format validation | FR-DCP-011, FR-DCP-017 |
+| UI-DCP-007 | Manual Data Entry | WF-DCP-UI-007 | Authorized User | Configured template fields | Mandatory field and data validation | FR-DCP-012, FR-DCP-016 |
+| UI-DCP-008 | Online Data Collection Form | WF-DCP-UI-008 | Data Provider | Configured data fields | Field-level validation | FR-DCP-013, FR-DCP-016 |
+| UI-DCP-009 | Submission Confirmation | WF-DCP-UI-009 | Data Provider | Submission summary, Request ID | Submit/Cancel | FR-DCP-018 to FR-DCP-020 |
 
 **I. Dependencies**
 
@@ -367,11 +382,13 @@ flowchart TD
 | AC-DCP-011 | FR-DCP-011 | Provider uploads attachment | Supported files can be uploaded successfully. |
 | AC-DCP-012 | FR-DCP-012 | Authorized user performs manual entry | User can enter and submit configured data. |
 | AC-DCP-013 | FR-DCP-013 | Provider submits online form | Form data can be submitted successfully. |
-| AC-DCP-014 | FR-DCP-014 | Required field is missing | System prevents submission and displays validation message. |
-| AC-DCP-015 | FR-DCP-015 | Invalid file is uploaded | System rejects the file and displays the reason. |
-| AC-DCP-016 | FR-DCP-016 | Submission is created | Submission is linked to the correct Request ID. |
-| AC-DCP-017 | FR-DCP-017 | Submission succeeds | Submission metadata is recorded. |
-| AC-DCP-018 | FR-DCP-018 | Valid submission is completed | Request status changes to Under Review. |
+| AC-DCP-014 | FR-DCP-014 | API Payload Received | System authenticates source and stages records successfully. |
+| AC-DCP-015 | FR-DCP-015 | Unstructured Source Received | System stores it as a source artifact and routes to manual transcription. |
+| AC-DCP-016 | FR-DCP-016 | Required field is missing | System prevents submission and displays validation message. |
+| AC-DCP-017 | FR-DCP-017 | Invalid file is uploaded | System rejects the file and displays the reason. |
+| AC-DCP-018 | FR-DCP-018 | Submission is created | Submission is linked to the correct Request ID. |
+| AC-DCP-019 | FR-DCP-019 | Submission succeeds | Submission metadata is recorded. |
+| AC-DCP-020 | FR-DCP-020 | Valid submission is completed | Request status changes to Under Review. |
 
 **4.2.2.3 Review & Approve**
 
@@ -445,28 +462,28 @@ flowchart TD
 |  |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **Requirement ID** | **Module Name** | **Requirement Description** | **Priority** | **Stakeholder** | **Business Rule ID** | **Acceptance Criteria ID** | **Dependency ID** |
-| FR-DCP-019 | Review & Approve | The system shall provide Pillar Users with a list of submissions pending review. | High | Pillar User | BR-DCP-019 | AC-DCP-019 | DEP-DCP-010 |
-| FR-DCP-020 | Review & Approve | The system shall allow reviewers to view submitted data and attachments. | High | Pillar User | BR-DCP-020 | AC-DCP-020 | DEP-DCP-007 |
-| FR-DCP-021 | Review & Approve | The system shall allow reviewers to record review comments. | High | Pillar User | BR-DCP-021 | AC-DCP-021 | DEP-DCP-010 |
-| FR-DCP-022 | Review & Approve | The system shall allow reviewers to approve valid submissions. | High | Authorized Approver | BR-DCP-022 | AC-DCP-022 | DEP-DCP-010 |
-| FR-DCP-023 | Review & Approve | The system shall allow reviewers to return submissions for correction. | High | Pillar User | BR-DCP-023 | AC-DCP-023 | DEP-DCP-010 |
-| FR-DCP-024 | Review & Approve | The system shall allow reviewers to reject submissions with appropriate comments. | High | Authorized Approver | BR-DCP-024 | AC-DCP-024 | DEP-DCP-010 |
-| FR-DCP-025 | Review & Approve | The system shall maintain review and approval history. | High | System | BR-DCP-025 | AC-DCP-025 | DEP-DCP-011 |
-| FR-DCP-026 | Review & Approve | The system shall update the submission status based on the reviewer decision. | High | System | BR-DCP-026 | AC-DCP-026 | DEP-DCP-010 |
+| FR-DCP-021 | Review & Approve | The system shall provide Pillar Users with a list of submissions pending review. | High | Pillar User | BR-DCP-021 | AC-DCP-021 | DEP-DCP-010 |
+| FR-DCP-022 | Review & Approve | The system shall allow reviewers to view submitted data and attachments. | High | Pillar User | BR-DCP-015 | AC-DCP-015 | DEP-DCP-007 |
+| FR-DCP-023 | Review & Approve | The system shall allow reviewers to record review comments. | High | Pillar User | BR-DCP-023 | AC-DCP-023 | DEP-DCP-010 |
+| FR-DCP-024 | Review & Approve | The system shall allow reviewers to approve valid submissions. | High | Authorized Approver | BR-DCP-024 | AC-DCP-024 | DEP-DCP-010 |
+| FR-DCP-025 | Review & Approve | The system shall allow reviewers to return submissions for correction. | High | Pillar User | BR-DCP-025 | AC-DCP-025 | DEP-DCP-010 |
+| FR-DCP-026 | Review & Approve | The system shall allow reviewers to reject submissions with appropriate comments. | High | Authorized Approver | BR-DCP-026 | AC-DCP-026 | DEP-DCP-010 |
+| FR-DCP-027 | Review & Approve | The system shall maintain review and approval history. | High | System | BR-DCP-027 | AC-DCP-027 | DEP-DCP-011 |
+| FR-DCP-028 | Review & Approve | The system shall update the submission status based on the reviewer decision. | High | System | BR-DCP-028 | AC-DCP-028 | DEP-DCP-010 |
 
 **F. Business Rules**
 
 | **Business Rule ID** | **Business Rule** |
 | --- | --- |
-| BR-DCP-019 | Only submissions assigned to the Pillar User's authorized Pillar shall be displayed. |
-| BR-DCP-020 | The reviewer shall have access to all information necessary to validate the submission. |
-| BR-DCP-021 | Comments shall be mandatory when returning or rejecting a submission. |
-| BR-DCP-022 | Only authorized approvers can provide final approval. |
-| BR-DCP-023 | Returned submissions shall be available to the Data Provider for correction and resubmission. |
-| BR-DCP-024 | Rejected submissions shall retain their review history. |
-| BR-DCP-025 | Every review action shall be recorded in the audit trail. |
-| BR-DCP-026 | Approved data shall be marked as approved and made available for downstream reporting/processing. |
-| BR-DCP-027 | The system shall prevent duplicate final approvals and write the published snapshot exactly once upon final approval. |
+| BR-DCP-021 | Only submissions assigned to the Pillar User's authorized Pillar shall be displayed. |
+| BR-DCP-022 | The reviewer shall have access to all information necessary to validate the submission. |
+| BR-DCP-023 | Comments shall be mandatory when returning or rejecting a submission. |
+| BR-DCP-024 | Only authorized approvers can provide final approval. |
+| BR-DCP-025 | Returned submissions shall be available to the Data Provider for correction and resubmission. |
+| BR-DCP-026 | Rejected submissions shall retain their review history. |
+| BR-DCP-027 | Every review action shall be recorded in the audit trail. |
+| BR-DCP-028 | Approved data shall be marked as approved and made available for downstream reporting/processing. |
+| BR-DCP-029 | The system shall prevent duplicate final approvals and write the published snapshot exactly once upon final approval. |
 
 **G. Application Workflows**
 
@@ -494,26 +511,26 @@ flowchart TD
 |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- |
 | **Step** | **Actor/System** | **Action** | **System Response** | **Status/Output** | **Linked Requirement IDs** |
-| 1 | System | Identifies submitted data | Displays pending review queue | Under Review | FR-DCP-019 |
-| 2 | Pillar User | Opens submission | Displays submitted data and attachments | Submission viewed | FR-DCP-020 |
-| 3 | Pillar User | Reviews data | System provides validation information | Review in progress | FR-DCP-020 |
-| 4 | Pillar User | Adds comments | System records comments | Review comments saved | FR-DCP-021 |
-| 5 | Authorized Approver | Approves submission | System updates submission | Approved | FR-DCP-022 |
-| 6 | Pillar User | Requests correction | System sends correction request | Returned | FR-DCP-023 |
-| 7 | Authorized Approver | Rejects submission | System records rejection | Rejected | FR-DCP-024 |
-| 8 | System | Records decision | System updates audit history | Audit trail updated | FR-DCP-025 |
-| 9 | System | Updates status | System reflects final decision | Final status updated | FR-DCP-026 |
+| 1 | System | Identifies submitted data | Displays pending review queue | Under Review | FR-DCP-021 |
+| 2 | Pillar User | Opens submission | Displays submitted data and attachments | Submission viewed | FR-DCP-022 |
+| 3 | Pillar User | Reviews data | System provides validation information | Review in progress | FR-DCP-022 |
+| 4 | Pillar User | Adds comments | System records comments | Review comments saved | FR-DCP-023 |
+| 5 | Authorized Approver | Approves submission | System updates submission | Approved | FR-DCP-024 |
+| 6 | Pillar User | Requests correction | System sends correction request | Returned | FR-DCP-025 |
+| 7 | Authorized Approver | Rejects submission | System records rejection | Rejected | FR-DCP-026 |
+| 8 | System | Records decision | System updates audit history | Audit trail updated | FR-DCP-027 |
+| 9 | System | Updates status | System reflects final decision | Final status updated | FR-DCP-028 |
 
 **H. Module-wise UI/Wireframes**
 
 |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- |
 | **UI ID** | **Screen/Page** | **Wireframe/Mockup Ref** | **Authorized Actor** | **Fields/Controls** | **Actions/States/Validations** | **Linked Requirement IDs** |
-| UI-DCP-010 | Review Queue | WF-DCP-UI-010 | Pillar User | Request ID, Provider, Period, Submitted Date, Status | Search, filter, sort | FR-DCP-019 |
-| UI-DCP-011 | Submission Review | WF-DCP-UI-011 | Pillar User | Submitted data, attachments, template | View/validate | FR-DCP-020 |
-| UI-DCP-012 | Review Comments | WF-DCP-UI-012 | Pillar User | Comments/observations | Mandatory for correction/rejection | FR-DCP-021 |
-| UI-DCP-013 | Approval Decision | WF-DCP-UI-013 | Authorized Approver | Approve, Return, Reject | Decision validation | FR-DCP-022 to FR-DCP-024 |
-| UI-DCP-014 | Review History | WF-DCP-UI-014 | Pillar User | Reviewer, timestamp, action, comments | View audit history | FR-DCP-025 |
+| UI-DCP-010 | Review Queue | WF-DCP-UI-010 | Pillar User | Request ID, Provider, Period, Submitted Date, Status | Search, filter, sort | FR-DCP-021 |
+| UI-DCP-011 | Submission Review | WF-DCP-UI-011 | Pillar User | Submitted data, attachments, template | View/validate | FR-DCP-022 |
+| UI-DCP-012 | Review Comments | WF-DCP-UI-012 | Pillar User | Comments/observations | Mandatory for correction/rejection | FR-DCP-023 |
+| UI-DCP-013 | Approval Decision | WF-DCP-UI-013 | Authorized Approver | Approve, Return, Reject | Decision validation | FR-DCP-024 to FR-DCP-026 |
+| UI-DCP-014 | Review History | WF-DCP-UI-014 | Pillar User | Reviewer, timestamp, action, comments | View audit history | FR-DCP-027 |
 
 **I. Dependencies**
 
@@ -530,15 +547,15 @@ flowchart TD
 |  |  |  |  |
 | --- | --- | --- | --- |
 | **Acceptance Criteria ID** | **Linked Requirements** | **Scenario** | **Acceptance Criteria** |
-| AC-DCP-019 | FR-DCP-019 | Submission is received | Submission appears in the review queue. |
-| AC-DCP-020 | FR-DCP-020 | Reviewer opens submission | Complete submitted data and attachments are accessible. |
-| AC-DCP-021 | FR-DCP-021 | Reviewer adds comment | Comment is successfully recorded. |
-| AC-DCP-022 | FR-DCP-022 | Valid submission is approved | Submission status changes to Approved. |
-| AC-DCP-023 | FR-DCP-023 | Data requires correction | Submission changes to Returned and Data Provider is notified. |
-| AC-DCP-024 | FR-DCP-024 | Submission is rejected | Submission changes to Rejected and rejection reason is recorded. |
-| AC-DCP-025 | FR-DCP-025 | Review decision is completed | Review action is recorded in audit history. |
-| AC-DCP-026 | FR-DCP-026 | Decision is recorded | System displays the correct submission status. |
-| AC-DCP-029 | FR-DCP-029 | Final approval occurs | A published snapshot of the validated data is securely written to the fact store. |
+| AC-DCP-021 | FR-DCP-021 | Submission is received | Submission appears in the review queue. |
+| AC-DCP-022 | FR-DCP-022 | Reviewer opens submission | Complete submitted data and attachments are accessible. |
+| AC-DCP-023 | FR-DCP-023 | Reviewer adds comment | Comment is successfully recorded. |
+| AC-DCP-024 | FR-DCP-024 | Valid submission is approved | Submission status changes to Approved. |
+| AC-DCP-025 | FR-DCP-025 | Data requires correction | Submission changes to Returned and Data Provider is notified. |
+| AC-DCP-026 | FR-DCP-026 | Submission is rejected | Submission changes to Rejected and rejection reason is recorded. |
+| AC-DCP-027 | FR-DCP-027 | Review decision is completed | Review action is recorded in audit history. |
+| AC-DCP-028 | FR-DCP-028 | Decision is recorded | System displays the correct submission status. |
+| AC-DCP-031 | FR-DCP-031 | Final approval occurs | A published snapshot of the validated data is securely written to the fact store. |
 
 **4.2.2.4 Operational Report on Data Collection Status**
 
@@ -620,25 +637,25 @@ flowchart TD
 |  |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | **Requirement ID** | **Module Name** | **Requirement Description** | **Priority** | **Stakeholder** | **Business Rule ID** | **Acceptance Criteria ID** | **Dependency ID** |
-| FR-DCP-027 | Operational Report | The system shall provide an operational dashboard for monitoring data collection status. | High | Pillar User | BR-DCP-027 | AC-DCP-027 | DEP-DCP-012 |
-| FR-DCP-028 | Operational Report | The system shall display collection requests by status. | High | Pillar User | BR-DCP-028 | AC-DCP-028 | DEP-DCP-012 |
-| FR-DCP-029 | Operational Report | The system shall identify overdue data collection requests. | High | Pillar User | BR-DCP-029 | AC-DCP-029 | DEP-DCP-013 |
-| FR-DCP-030 | Operational Report | The system shall provide filtering by Pillar, Provider, Collection Period and Status. | Medium | Pillar User | BR-DCP-030 | AC-DCP-030 | DEP-DCP-012 |
-| FR-DCP-031 | Operational Report | The system shall allow users to drill down from summary status to individual collection requests. | Medium | Pillar User | BR-DCP-031 | AC-DCP-031 | DEP-DCP-012 |
-| FR-DCP-032 | Operational Report | The system shall provide collection progress indicators. | Medium | Management User | BR-DCP-032 | AC-DCP-032 | DEP-DCP-012 |
-| FR-DCP-033 | Operational Report | The system shall support export of operational report data. | Medium | Pillar User | BR-DCP-033 | AC-DCP-033 | DEP-DCP-014 |
+| FR-DCP-029 | Operational Report | The system shall provide an operational dashboard for monitoring data collection status. | High | Pillar User | BR-DCP-029 | AC-DCP-029 | DEP-DCP-012 |
+| FR-DCP-030 | Operational Report | The system shall display collection requests by status. | High | Pillar User | BR-DCP-030 | AC-DCP-030 | DEP-DCP-012 |
+| FR-DCP-031 | Operational Report | The system shall identify overdue data collection requests. | High | Pillar User | BR-DCP-031 | AC-DCP-031 | DEP-DCP-013 |
+| FR-DCP-032 | Operational Report | The system shall provide filtering by Pillar, Provider, Collection Period and Status. | Medium | Pillar User | BR-DCP-032 | AC-DCP-032 | DEP-DCP-012 |
+| FR-DCP-033 | Operational Report | The system shall allow users to drill down from summary status to individual collection requests. | Medium | Pillar User | BR-DCP-033 | AC-DCP-033 | DEP-DCP-012 |
+| FR-DCP-034 | Operational Report | The system shall provide collection progress indicators. | Medium | Management User | BR-DCP-034 | AC-DCP-034 | DEP-DCP-012 |
+| FR-DCP-035 | Operational Report | The system shall support export of operational report data. | Medium | Pillar User | BR-DCP-035 | AC-DCP-035 | DEP-DCP-014 |
 
 **F. Business Rules**
 
 | **Business Rule ID** | **Business Rule** |
 | --- | --- |
-| BR-DCP-027 | Users shall only see collection data for the Pillars to which they have access. |
-| BR-DCP-028 | Status counts shall be calculated from the current status of collection requests. |
-| BR-DCP-029 | A request shall be classified as overdue when its due date has passed and the required submission has not been received. |
-| BR-DCP-030 | Report filters shall dynamically update the displayed collection information. |
-| BR-DCP-031 | Drill-down information shall respect user access permissions. |
-| BR-DCP-032 | Collection progress shall be calculated based on completed versus expected collection requests. |
-| BR-DCP-033 | Exported reports shall contain only information accessible to the requesting user. |
+| BR-DCP-029 | Users shall only see collection data for the Pillars to which they have access. |
+| BR-DCP-030 | Status counts shall be calculated from the current status of collection requests. |
+| BR-DCP-031 | A request shall be classified as overdue when its due date has passed and the required submission has not been received. |
+| BR-DCP-032 | Report filters shall dynamically update the displayed collection information. |
+| BR-DCP-033 | Drill-down information shall respect user access permissions. |
+| BR-DCP-034 | Collection progress shall be calculated based on completed versus expected collection requests. |
+| BR-DCP-035 | Exported reports shall contain only information accessible to the requesting user. |
 
 **G. Application Workflows**
 
@@ -663,24 +680,24 @@ flowchart TD
 |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- |
 | **Step** | **Actor/System** | **Action** | **System Response** | **Status/Output** | **Linked Requirement IDs** |
-| 1 | Pillar User | Opens operational report | System retrieves latest collection data | Dashboard displayed | FR-DCP-027 |
-| 2 | System | Calculates status counts | System displays status summary | Status overview | FR-DCP-028 |
-| 3 | System | Identifies overdue requests | System compares due dates with current status | Overdue list | FR-DCP-029 |
-| 4 | Pillar User | Applies filters | System refreshes results | Filtered report | FR-DCP-030 |
-| 5 | Pillar User | Selects a request | System displays request details | Detailed view | FR-DCP-031 |
-| 6 | System | Calculates progress | System displays collection progress | Progress indicator | FR-DCP-032 |
-| 7 | Pillar User | Exports report | System generates report | Exported file | FR-DCP-033 |
+| 1 | Pillar User | Opens operational report | System retrieves latest collection data | Dashboard displayed | FR-DCP-029 |
+| 2 | System | Calculates status counts | System displays status summary | Status overview | FR-DCP-030 |
+| 3 | System | Identifies overdue requests | System compares due dates with current status | Overdue list | FR-DCP-031 |
+| 4 | Pillar User | Applies filters | System refreshes results | Filtered report | FR-DCP-032 |
+| 5 | Pillar User | Selects a request | System displays request details | Detailed view | FR-DCP-033 |
+| 6 | System | Calculates progress | System displays collection progress | Progress indicator | FR-DCP-034 |
+| 7 | Pillar User | Exports report | System generates report | Exported file | FR-DCP-035 |
 
 **H. Module-wise UI/Wireframes**
 
 |  |  |  |  |  |  |  |
 | --- | --- | --- | --- | --- | --- | --- |
 | **UI ID** | **Screen/Page** | **Wireframe/Mockup Ref** | **Authorized Actor** | **Fields/Controls** | **Actions/States/Validations** | **Linked Requirement IDs** |
-| UI-DCP-015 | Data Collection Dashboard | WF-DCP-UI-015 | Pillar User | Total Requests, Pending, Submitted, Review, Approved, Returned, Rejected | View summary | FR-DCP-027, FR-DCP-028 |
-| UI-DCP-016 | Collection Status Report | WF-DCP-UI-016 | Pillar User | Pillar, Provider, Period, Status | Search/filter/sort | FR-DCP-030 |
-| UI-DCP-017 | Overdue Requests | WF-DCP-UI-017 | Pillar User | Request ID, Provider, Due Date, Days Overdue | View details | FR-DCP-029 |
-| UI-DCP-018 | Collection Request Details | WF-DCP-UI-018 | Pillar User | Request details, submission status, review status | Drill down | FR-DCP-031 |
-| UI-DCP-019 | Report Export | WF-DCP-UI-019 | Authorized User | Export format, filters | Export report | FR-DCP-033 |
+| UI-DCP-015 | Data Collection Dashboard | WF-DCP-UI-015 | Pillar User | Total Requests, Pending, Submitted, Review, Approved, Returned, Rejected | View summary | FR-DCP-029, FR-DCP-030 |
+| UI-DCP-016 | Collection Status Report | WF-DCP-UI-016 | Pillar User | Pillar, Provider, Period, Status | Search/filter/sort | FR-DCP-032 |
+| UI-DCP-017 | Overdue Requests | WF-DCP-UI-017 | Pillar User | Request ID, Provider, Due Date, Days Overdue | View details | FR-DCP-031 |
+| UI-DCP-018 | Collection Request Details | WF-DCP-UI-018 | Pillar User | Request details, submission status, review status | Drill down | FR-DCP-033 |
+| UI-DCP-019 | Report Export | WF-DCP-UI-019 | Authorized User | Export format, filters | Export report | FR-DCP-035 |
 
 **I. Dependencies**
 
@@ -696,13 +713,13 @@ flowchart TD
 |  |  |  |  |
 | --- | --- | --- | --- |
 | **Acceptance Criteria ID** | **Linked Requirements** | **Scenario** | **Acceptance Criteria** |
-| AC-DCP-027 | FR-DCP-027 | User opens report | Operational dashboard displays current collection status. |
-| AC-DCP-028 | FR-DCP-028 | Status data is available | Correct counts are displayed for each status. |
-| AC-DCP-029 | FR-DCP-029 | Due date has passed | Request is identified as overdue when applicable. |
-| AC-DCP-030 | FR-DCP-030 | User applies filters | Report displays only matching records. |
-| AC-DCP-031 | FR-DCP-031 | User selects request | System displays detailed request information. |
-| AC-DCP-032 | FR-DCP-032 | Collection progress is calculated | Progress indicator accurately represents collection completion. |
-| AC-DCP-033 | FR-DCP-033 | User exports report | System generates an export containing accessible report data. |
+| AC-DCP-029 | FR-DCP-029 | User opens report | Operational dashboard displays current collection status. |
+| AC-DCP-030 | FR-DCP-030 | Status data is available | Correct counts are displayed for each status. |
+| AC-DCP-031 | FR-DCP-031 | Due date has passed | Request is identified as overdue when applicable. |
+| AC-DCP-032 | FR-DCP-032 | User applies filters | Report displays only matching records. |
+| AC-DCP-033 | FR-DCP-033 | User selects request | System displays detailed request information. |
+| AC-DCP-034 | FR-DCP-034 | Collection progress is calculated | Progress indicator accurately represents collection completion. |
+| AC-DCP-035 | FR-DCP-035 | User exports report | System generates an export containing accessible report data. |
 
 **4.2.2.5 End-to-End Data Collection Process**
 
